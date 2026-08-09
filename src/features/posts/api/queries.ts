@@ -1,4 +1,4 @@
-import { queryOptions } from "@tanstack/react-query";
+import { keepPreviousData, queryOptions } from "@tanstack/react-query";
 
 import { getPost, getPostComments, getPostTagList, getPostTags, getPosts } from "./client";
 import type { PostsListInput } from "./client";
@@ -19,6 +19,7 @@ export function postsListQueryOptions(input: PostsListInput) {
     queryKey: postsKeys.list(input),
     queryFn: ({ signal }) => getPosts(input, signal),
     staleTime: 60_000,
+    placeholderData: keepPreviousData,
   });
 }
 
@@ -26,6 +27,7 @@ export function postDetailQueryOptions(postId: number) {
   return queryOptions({
     queryKey: postsKeys.detail(postId),
     queryFn: ({ signal }) => getPost(postId, signal),
+    staleTime: 5 * 60_000,
   });
 }
 
@@ -33,7 +35,7 @@ export function postTagsQueryOptions() {
   return queryOptions({
     queryKey: postsKeys.tags(),
     queryFn: ({ signal }) => getPostTags(signal),
-    staleTime: 5 * 60_000,
+    staleTime: 10 * 60_000,
   });
 }
 
@@ -41,7 +43,7 @@ export function postTagListQueryOptions() {
   return queryOptions({
     queryKey: postsKeys.tagList(),
     queryFn: ({ signal }) => getPostTagList(signal),
-    staleTime: 5 * 60_000,
+    staleTime: 10 * 60_000,
   });
 }
 
@@ -49,6 +51,7 @@ export function postCommentsQueryOptions(postId: number) {
   return queryOptions({
     queryKey: postsKeys.comments(postId),
     queryFn: ({ signal }) => getPostComments(postId, signal),
+    staleTime: 2 * 60_000,
   });
 }
 
