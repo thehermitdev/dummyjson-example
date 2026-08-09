@@ -7,13 +7,23 @@ export function UserDetailPage({ user, children }: { user: User; children?: Reac
     <div className="space-y-6">
       <div className="rounded-xl border bg-card p-6 shadow-xs">
         <div className="flex flex-col gap-5 md:flex-row md:items-center">
-          <img src={user.image} alt="" className="size-20 rounded-2xl border bg-muted object-cover" />
+          <img
+            src={user.image}
+            alt=""
+            className="size-20 rounded-2xl border bg-muted object-cover"
+          />
           <div className="min-w-0 flex-1">
             <p className="text-sm font-medium text-primary">User #{user.id}</p>
-            <h1 className="mt-1 text-3xl font-semibold tracking-tight">{user.firstName} {user.lastName}</h1>
-            <p className="mt-1 text-sm text-muted-foreground">{user.email} · {user.phone}</p>
+            <h1 className="mt-1 text-3xl font-semibold tracking-tight">
+              {user.firstName} {user.lastName}
+            </h1>
+            <p className="mt-1 text-sm text-muted-foreground">
+              {user.email} · {user.phone}
+            </p>
           </div>
-          <span className="w-fit rounded-full bg-muted px-3 py-1 text-sm capitalize">{user.role}</span>
+          <span className="w-fit rounded-full bg-muted px-3 py-1 text-sm capitalize">
+            {user.role}
+          </span>
         </div>
         <div className="mt-6 grid gap-4 border-t pt-5 sm:grid-cols-2 lg:grid-cols-4">
           <Meta label="Company" value={user.company.name} />
@@ -22,10 +32,27 @@ export function UserDetailPage({ user, children }: { user: User; children?: Reac
           <Meta label="Age" value={String(user.age)} />
         </div>
         <nav className="mt-6 flex flex-wrap gap-2 border-t pt-5 text-sm">
-          <a className="rounded-md border px-3 py-2 hover:bg-muted" href={`/users/${user.id}`}>Overview</a>
-          <a className="rounded-md border px-3 py-2 hover:bg-muted" href={`/users/${user.id}/posts`}>Posts</a>
-          <a className="rounded-md border px-3 py-2 hover:bg-muted" href={`/users/${user.id}/carts`}>Carts</a>
-          <a className="rounded-md border px-3 py-2 hover:bg-muted" href={`/users/${user.id}/todos`}>Tasks</a>
+          <a className="rounded-md border px-3 py-2 hover:bg-muted" href={`/users/${user.id}`}>
+            Overview
+          </a>
+          <a
+            className="rounded-md border px-3 py-2 hover:bg-muted"
+            href={`/users/${user.id}/posts`}
+          >
+            Posts
+          </a>
+          <a
+            className="rounded-md border px-3 py-2 hover:bg-muted"
+            href={`/users/${user.id}/carts`}
+          >
+            Carts
+          </a>
+          <a
+            className="rounded-md border px-3 py-2 hover:bg-muted"
+            href={`/users/${user.id}/todos`}
+          >
+            Tasks
+          </a>
         </nav>
       </div>
       {children}
@@ -34,5 +61,10 @@ export function UserDetailPage({ user, children }: { user: User; children?: Reac
 }
 
 function Meta({ label, value }: { label: string; value: string }) {
-  return <div><p className="text-xs uppercase tracking-wide text-muted-foreground">{label}</p><p className="mt-1 font-medium">{value}</p></div>;
+  return (
+    <div>
+      <p className="text-xs uppercase tracking-wide text-muted-foreground">{label}</p>
+      <p className="mt-1 font-medium">{value}</p>
+    </div>
+  );
 }

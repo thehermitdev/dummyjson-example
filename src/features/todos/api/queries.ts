@@ -11,6 +11,17 @@ export const todosKeys = {
   detail: (todoId: number) => [...todosKeys.details(), todoId] as const,
 };
 
-export function todosListQueryOptions(input: TodosListInput) { return queryOptions({ queryKey: todosKeys.list(input), queryFn: ({ signal }) => getTodos(input, signal), staleTime: 60_000 }); }
-export function todoDetailQueryOptions(todoId: number) { return queryOptions({ queryKey: todosKeys.detail(todoId), queryFn: ({ signal }) => getTodo(todoId, signal) }); }
+export function todosListQueryOptions(input: TodosListInput) {
+  return queryOptions({
+    queryKey: todosKeys.list(input),
+    queryFn: ({ signal }) => getTodos(input, signal),
+    staleTime: 60_000,
+  });
+}
+export function todoDetailQueryOptions(todoId: number) {
+  return queryOptions({
+    queryKey: todosKeys.detail(todoId),
+    queryFn: ({ signal }) => getTodo(todoId, signal),
+  });
+}
 export type { TodosListInput } from "./client";

@@ -3,11 +3,7 @@ import type { ReactNode } from "react";
 import { AppBreadcrumb } from "#/app/shell/app-breadcrumb";
 import { AppSidebar } from "#/app/shell/app-sidebar";
 import { ModeToggle } from "#/shared/theme/mode-toggle";
-import {
-  SidebarInset,
-  SidebarProvider,
-  SidebarTrigger,
-} from "#/shared/components/ui/sidebar";
+import { SidebarInset, SidebarProvider, SidebarTrigger } from "#/shared/components/ui/sidebar";
 
 export function AdminLayout({ children }: { children: ReactNode }) {
   return (

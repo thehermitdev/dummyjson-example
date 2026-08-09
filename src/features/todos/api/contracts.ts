@@ -20,7 +20,10 @@ export const createTodoInputSchema = z.object({
   userId: z.coerce.number().int().positive(),
 });
 export const updateTodoInputSchema = createTodoInputSchema.partial();
-export const deletedTodoSchema = todoSchema.extend({ isDeleted: z.boolean(), deletedOn: z.string() });
+export const deletedTodoSchema = todoSchema.extend({
+  isDeleted: z.boolean(),
+  deletedOn: z.string(),
+});
 
 export type Todo = z.infer<typeof todoSchema>;
 export type TodosListResponse = z.infer<typeof todosListResponseSchema>;

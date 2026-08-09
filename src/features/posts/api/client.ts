@@ -44,7 +44,10 @@ function parseResponse<T>(schema: ZodType<T>, data: unknown, message: string): T
   return result.data;
 }
 
-export async function getPosts(input: PostsListInput, signal: AbortSignal): Promise<PostsListResponse> {
+export async function getPosts(
+  input: PostsListInput,
+  signal: AbortSignal,
+): Promise<PostsListResponse> {
   const skip = (input.page - 1) * input.pageSize;
   const params = {
     limit: input.pageSize,
@@ -100,11 +103,8 @@ export async function getPostTagList(signal: AbortSignal): Promise<string[]> {
 
 export async function getPostComments(postId: number, signal: AbortSignal): Promise<PostComment[]> {
   const response = await httpClient.get(`/posts/${postId}/comments`, { signal });
-  return parseResponse(
-    postCommentsResponseSchema,
-    response.data,
-    "Invalid post comments response",
-  ).comments;
+  return parseResponse(postCommentsResponseSchema, response.data, "Invalid post comments response")
+    .comments;
 }
 
 export async function addPost(input: CreatePostInput): Promise<Post> {

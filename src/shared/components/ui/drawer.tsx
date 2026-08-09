@@ -48,9 +48,16 @@ export function DrawerFooter(props: React.ComponentProps<"div">) {
 }
 
 export function DrawerTitle(props: React.ComponentProps<typeof DialogPrimitive.Title>) {
-  return <DialogPrimitive.Title {...props} className={cn("text-lg font-semibold", props.className)} />;
+  return (
+    <DialogPrimitive.Title {...props} className={cn("text-lg font-semibold", props.className)} />
+  );
 }
 
 export function DrawerDescription(props: React.ComponentProps<typeof DialogPrimitive.Description>) {
-  return <DialogPrimitive.Description {...props} className={cn("mt-1 text-sm text-muted-foreground", props.className)} />;
+  return (
+    <DialogPrimitive.Description
+      {...props}
+      className={cn("mt-1 text-sm text-muted-foreground", props.className)}
+    />
+  );
 }

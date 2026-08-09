@@ -1,10 +1,6 @@
 import type React from "react";
 
-import type {
-  UserCartsResponse,
-  UserPostsResponse,
-  UserTodosResponse,
-} from "../api/contracts";
+import type { UserCartsResponse, UserPostsResponse, UserTodosResponse } from "../api/contracts";
 
 export function UserPostsPanel({ data }: { data: UserPostsResponse }) {
   return (

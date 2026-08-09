@@ -14,7 +14,8 @@ export function Alert({
       className={cn(
         "grid w-full gap-1 rounded-lg border px-4 py-3 text-sm",
         variant === "destructive" && "border-destructive/30 bg-destructive/5 text-destructive",
-        variant === "warning" && "border-amber-500/30 bg-amber-500/10 text-amber-950 dark:text-amber-100",
+        variant === "warning" &&
+          "border-amber-500/30 bg-amber-500/10 text-amber-950 dark:text-amber-100",
         className,
       )}
     />

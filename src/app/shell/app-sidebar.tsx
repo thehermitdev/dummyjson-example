@@ -78,7 +78,9 @@ export function AppSidebar() {
           {open ? (
             <span className="min-w-0">
               <span className="block truncate text-sm font-semibold">DummyJSON Admin</span>
-              <span className="block truncate text-xs text-sidebar-foreground/60">Backoffice Console</span>
+              <span className="block truncate text-xs text-sidebar-foreground/60">
+                Backoffice Console
+              </span>
             </span>
           ) : null}
         </Link>

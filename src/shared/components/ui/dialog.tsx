@@ -40,13 +40,25 @@ export function DialogHeader(props: React.ComponentProps<"div">) {
 }
 
 export function DialogFooter(props: React.ComponentProps<"div">) {
-  return <div {...props} className={cn("mt-6 flex flex-col-reverse gap-2 sm:flex-row sm:justify-end", props.className)} />;
+  return (
+    <div
+      {...props}
+      className={cn("mt-6 flex flex-col-reverse gap-2 sm:flex-row sm:justify-end", props.className)}
+    />
+  );
 }
 
 export function DialogTitle(props: React.ComponentProps<typeof DialogPrimitive.Title>) {
-  return <DialogPrimitive.Title {...props} className={cn("text-lg font-semibold", props.className)} />;
+  return (
+    <DialogPrimitive.Title {...props} className={cn("text-lg font-semibold", props.className)} />
+  );
 }
 
 export function DialogDescription(props: React.ComponentProps<typeof DialogPrimitive.Description>) {
-  return <DialogPrimitive.Description {...props} className={cn("text-sm text-muted-foreground", props.className)} />;
+  return (
+    <DialogPrimitive.Description
+      {...props}
+      className={cn("text-sm text-muted-foreground", props.className)}
+    />
+  );
 }

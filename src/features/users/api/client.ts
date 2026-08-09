@@ -47,7 +47,10 @@ function parseResponse<T>(schema: ZodType<T>, data: unknown, message: string): T
   return result.data;
 }
 
-export async function getUsers(input: UsersListInput, signal: AbortSignal): Promise<UsersListResponse> {
+export async function getUsers(
+  input: UsersListInput,
+  signal: AbortSignal,
+): Promise<UsersListResponse> {
   const skip = (input.page - 1) * input.pageSize;
   const common = {
     limit: input.pageSize,
@@ -98,26 +101,33 @@ export async function getUsersDirectory(signal: AbortSignal): Promise<UsersDirec
   );
 }
 
-export async function getUserPosts(userId: number, signal: AbortSignal): Promise<UserPostsResponse> {
+export async function getUserPosts(
+  userId: number,
+  signal: AbortSignal,
+): Promise<UserPostsResponse> {
   const response = await httpClient.get(`/users/${userId}/posts`, { signal });
   return parseResponse(userPostsResponseSchema, response.data, "Invalid user posts response");
 }
 
-export async function getUserCarts(userId: number, signal: AbortSignal): Promise<UserCartsResponse> {
+export async function getUserCarts(
+  userId: number,
+  signal: AbortSignal,
+): Promise<UserCartsResponse> {
   const response = await httpClient.get(`/users/${userId}/carts`, { signal });
   return parseResponse(userCartsResponseSchema, response.data, "Invalid user carts response");
 }
 
-export async function getUserTodos(userId: number, signal: AbortSignal): Promise<UserTodosResponse> {
+export async function getUserTodos(
+  userId: number,
+  signal: AbortSignal,
+): Promise<UserTodosResponse> {
   const response = await httpClient.get(`/users/${userId}/todos`, { signal });
   return parseResponse(userTodosResponseSchema, response.data, "Invalid user todos response");
 }
 
 export async function addUser(input: CreateUserInput): Promise<User> {
   const parsed = createUserInputSchema.parse(input);
-  const username = `${parsed.firstName}.${parsed.lastName}`
-    .toLowerCase()
-    .replace(/\s+/g, "");
+  const username = `${parsed.firstName}.${parsed.lastName}`.toLowerCase().replace(/\s+/g, "");
   const payload = {
     ...parsed,
     username,
@@ -154,10 +164,6 @@ export async function updateUser(userId: number, input: UpdateUserInput): Promis
 
 export async function deleteUser(userId: number): Promise<User> {
   const response = await httpClient.delete(`/users/${userId}`);
-  const deleted = parseResponse(
-    deletedUserSchema,
-    response.data,
-    "Invalid delete user response",
-  );
+  const deleted = parseResponse(deletedUserSchema, response.data, "Invalid delete user response");
   return userSchema.parse(deleted);
 }

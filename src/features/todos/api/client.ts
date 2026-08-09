@@ -5,12 +5,7 @@ import {
   todosListResponseSchema,
   updateTodoInputSchema,
 } from "./contracts";
-import type {
-  CreateTodoInput,
-  Todo,
-  TodosListResponse,
-  UpdateTodoInput,
-} from "./contracts";
+import type { CreateTodoInput, Todo, TodosListResponse, UpdateTodoInput } from "./contracts";
 import { httpClient } from "#/shared/api/http-client";
 import { ApplicationError } from "#/shared/errors/application-error";
 
@@ -20,7 +15,10 @@ export interface TodosListInput {
   userId?: number | undefined;
 }
 
-export async function getTodos(input: TodosListInput, signal: AbortSignal): Promise<TodosListResponse> {
+export async function getTodos(
+  input: TodosListInput,
+  signal: AbortSignal,
+): Promise<TodosListResponse> {
   const params = { limit: input.pageSize, skip: (input.page - 1) * input.pageSize };
   const endpoint = input.userId ? `/todos/user/${input.userId}` : "/todos";
   const response = await httpClient.get(endpoint, { params, signal });

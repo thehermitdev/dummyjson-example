@@ -12,5 +12,9 @@ export const Route = createFileRoute("/(protected)/_admin")({
 });
 
 function AdminRoute() {
-  return <AdminLayout><Outlet /></AdminLayout>;
+  return (
+    <AdminLayout>
+      <Outlet />
+    </AdminLayout>
+  );
 }

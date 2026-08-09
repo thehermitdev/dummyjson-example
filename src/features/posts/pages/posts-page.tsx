@@ -161,7 +161,9 @@ export function PostsPage({ data, input, tags, users, onInputChange }: PostsPage
           >
             <option value="">All tags</option>
             {tags.map((tag) => (
-              <option key={tag} value={tag}>{tag}</option>
+              <option key={tag} value={tag}>
+                {tag}
+              </option>
             ))}
           </select>
 
@@ -178,7 +180,9 @@ export function PostsPage({ data, input, tags, users, onInputChange }: PostsPage
           >
             <option value="">All authors</option>
             {users.map((user) => (
-              <option key={user.id} value={user.id}>{user.firstName} {user.lastName}</option>
+              <option key={user.id} value={user.id}>
+                {user.firstName} {user.lastName}
+              </option>
             ))}
           </select>
 
@@ -243,7 +247,9 @@ export function PostsPage({ data, input, tags, users, onInputChange }: PostsPage
                   <td className="px-4 py-3">
                     <div className="flex max-w-52 flex-wrap gap-1">
                       {post.tags.slice(0, 3).map((tag) => (
-                        <span key={tag} className="rounded-full bg-muted px-2 py-0.5 text-xs">{tag}</span>
+                        <span key={tag} className="rounded-full bg-muted px-2 py-0.5 text-xs">
+                          {tag}
+                        </span>
                       ))}
                     </div>
                   </td>
@@ -252,9 +258,19 @@ export function PostsPage({ data, input, tags, users, onInputChange }: PostsPage
                   </td>
                   <td className="px-4 py-3">
                     <div className="flex justify-end gap-1">
-                      <Button variant="ghost" size="icon-sm" render={<a href={`/posts/${post.id}`} />}><Eye className="size-4" /></Button>
-                      <Button variant="ghost" size="icon-sm" onClick={() => openEdit(post)}><Pencil className="size-4" /></Button>
-                      <Button variant="ghost" size="icon-sm" onClick={() => setDeleting(post)}><Trash2 className="size-4" /></Button>
+                      <Button
+                        variant="ghost"
+                        size="icon-sm"
+                        render={<a href={`/posts/${post.id}`} />}
+                      >
+                        <Eye className="size-4" />
+                      </Button>
+                      <Button variant="ghost" size="icon-sm" onClick={() => openEdit(post)}>
+                        <Pencil className="size-4" />
+                      </Button>
+                      <Button variant="ghost" size="icon-sm" onClick={() => setDeleting(post)}>
+                        <Trash2 className="size-4" />
+                      </Button>
                     </div>
                   </td>
                 </tr>
@@ -276,20 +292,72 @@ export function PostsPage({ data, input, tags, users, onInputChange }: PostsPage
           <form className="flex h-full flex-col" onSubmit={submit}>
             <DrawerHeader>
               <DrawerTitle>{editing ? "Update post" : "Add post"}</DrawerTitle>
-              <DrawerDescription>Posts are always attributed to a DummyJSON user.</DrawerDescription>
+              <DrawerDescription>
+                Posts are always attributed to a DummyJSON user.
+              </DrawerDescription>
             </DrawerHeader>
             <DrawerBody>
               <div className="grid gap-4">
-                <Field label="Title"><input required value={form.title} onChange={(event) => setForm({ ...form, title: event.target.value })} className="field-input" /></Field>
-                <Field label="Body"><textarea required rows={8} value={form.body} onChange={(event) => setForm({ ...form, body: event.target.value })} className="field-input min-h-32" /></Field>
-                <Field label="Tags (comma separated)"><input value={form.tags.join(", ")} onChange={(event) => setForm({ ...form, tags: event.target.value.split(",").map((value) => value.trim()).filter(Boolean) })} className="field-input" /></Field>
-                <Field label="Author"><select value={form.userId} onChange={(event) => setForm({ ...form, userId: Number(event.target.value) })} className="field-input">{users.map((user) => <option key={user.id} value={user.id}>{user.firstName} {user.lastName}</option>)}</select></Field>
+                <Field label="Title">
+                  <input
+                    required
+                    value={form.title}
+                    onChange={(event) => setForm({ ...form, title: event.target.value })}
+                    className="field-input"
+                  />
+                </Field>
+                <Field label="Body">
+                  <textarea
+                    required
+                    rows={8}
+                    value={form.body}
+                    onChange={(event) => setForm({ ...form, body: event.target.value })}
+                    className="field-input min-h-32"
+                  />
+                </Field>
+                <Field label="Tags (comma separated)">
+                  <input
+                    value={form.tags.join(", ")}
+                    onChange={(event) =>
+                      setForm({
+                        ...form,
+                        tags: event.target.value
+                          .split(",")
+                          .map((value) => value.trim())
+                          .filter(Boolean),
+                      })
+                    }
+                    className="field-input"
+                  />
+                </Field>
+                <Field label="Author">
+                  <select
+                    value={form.userId}
+                    onChange={(event) => setForm({ ...form, userId: Number(event.target.value) })}
+                    className="field-input"
+                  >
+                    {users.map((user) => (
+                      <option key={user.id} value={user.id}>
+                        {user.firstName} {user.lastName}
+                      </option>
+                    ))}
+                  </select>
+                </Field>
               </div>
-              {formError ? <Alert variant="destructive" className="mt-5"><AlertTitle>Unable to save post</AlertTitle><AlertDescription>{formError}</AlertDescription></Alert> : null}
+              {formError ? (
+                <Alert variant="destructive" className="mt-5">
+                  <AlertTitle>Unable to save post</AlertTitle>
+                  <AlertDescription>{formError}</AlertDescription>
+                </Alert>
+              ) : null}
             </DrawerBody>
             <DrawerFooter>
-              <Button type="button" variant="outline" onClick={() => setDrawerOpen(false)}>Cancel</Button>
-              <Button type="submit" disabled={addMutation.isPending || updateMutation.isPending}>{addMutation.isPending || updateMutation.isPending ? "Saving…" : "Save post"}</Button>
+              <Button type="button" variant="outline" onClick={() => setDrawerOpen(false)}>
+                Cancel
+              </Button>
+              <Button type="submit" disabled={addMutation.isPending || updateMutation.isPending}>
+                {addMutation.isPending || updateMutation.isPending ? "Saving…" : "Save post"}
+              </Button>
             </DrawerFooter>
           </form>
         </DrawerContent>
@@ -299,7 +367,11 @@ export function PostsPage({ data, input, tags, users, onInputChange }: PostsPage
         open={Boolean(deleting)}
         onOpenChange={(open) => !open && setDeleting(null)}
         title="Delete post?"
-        description={deleting ? `This will simulate deleting “${deleting.title}”.` : "Delete the selected post."}
+        description={
+          deleting
+            ? `This will simulate deleting “${deleting.title}”.`
+            : "Delete the selected post."
+        }
         pending={deleteMutation.isPending}
         onConfirm={() => void confirmDelete()}
       />
@@ -308,5 +380,10 @@ export function PostsPage({ data, input, tags, users, onInputChange }: PostsPage
 }
 
 function Field({ label, children }: { label: string; children: React.ReactNode }) {
-  return <label className="grid gap-1.5 text-sm font-medium"><span>{label}</span>{children}</label>;
+  return (
+    <label className="grid gap-1.5 text-sm font-medium">
+      <span>{label}</span>
+      {children}
+    </label>
+  );
 }

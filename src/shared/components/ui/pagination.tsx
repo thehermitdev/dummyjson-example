@@ -4,7 +4,14 @@ import { ChevronLeft, ChevronRight, MoreHorizontal } from "lucide-react";
 import { cn } from "#/shared/lib/utils";
 
 export function Pagination(props: React.ComponentProps<"nav">) {
-  return <nav role="navigation" aria-label="pagination" {...props} className={cn("mx-auto flex w-full justify-center", props.className)} />;
+  return (
+    <nav
+      role="navigation"
+      aria-label="pagination"
+      {...props}
+      className={cn("mx-auto flex w-full justify-center", props.className)}
+    />
+  );
 }
 
 export function PaginationContent(props: React.ComponentProps<"ul">) {

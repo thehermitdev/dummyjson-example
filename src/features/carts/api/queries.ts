@@ -12,11 +12,18 @@ export const cartsKeys = {
 };
 
 export function cartsListQueryOptions(input: CartsListInput) {
-  return queryOptions({ queryKey: cartsKeys.list(input), queryFn: ({ signal }) => getCarts(input, signal), staleTime: 60_000 });
+  return queryOptions({
+    queryKey: cartsKeys.list(input),
+    queryFn: ({ signal }) => getCarts(input, signal),
+    staleTime: 60_000,
+  });
 }
 
 export function cartDetailQueryOptions(cartId: number) {
-  return queryOptions({ queryKey: cartsKeys.detail(cartId), queryFn: ({ signal }) => getCart(cartId, signal) });
+  return queryOptions({
+    queryKey: cartsKeys.detail(cartId),
+    queryFn: ({ signal }) => getCart(cartId, signal),
+  });
 }
 
 export type { CartsListInput } from "./client";

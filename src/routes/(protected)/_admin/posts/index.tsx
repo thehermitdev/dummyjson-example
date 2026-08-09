@@ -20,11 +20,12 @@ const searchSchema = z.object({
 export const Route = createFileRoute("/(protected)/_admin/posts/")({
   validateSearch: (search) => searchSchema.parse(search),
   loaderDeps: ({ search }) => search,
-  loader: ({ context, deps }) => Promise.all([
-    context.queryClient.ensureQueryData(postsListQueryOptions(deps)),
-    context.queryClient.ensureQueryData(postTagListQueryOptions()),
-    context.queryClient.ensureQueryData(usersDirectoryQueryOptions()),
-  ]),
+  loader: ({ context, deps }) =>
+    Promise.all([
+      context.queryClient.ensureQueryData(postsListQueryOptions(deps)),
+      context.queryClient.ensureQueryData(postTagListQueryOptions()),
+      context.queryClient.ensureQueryData(usersDirectoryQueryOptions()),
+    ]),
   pendingComponent: () => <RoutePendingState label="Loading posts…" />,
   errorComponent: ({ error, reset }) => <RouteErrorState error={error} reset={reset} />,
   head: () => ({ meta: [{ title: "Posts · DummyJSON Admin" }] }),
@@ -37,6 +38,15 @@ function PostsRoute() {
   const posts = useSuspenseQuery(postsListQueryOptions(search)).data;
   const tags = useSuspenseQuery(postTagListQueryOptions()).data;
   const users = useSuspenseQuery(usersDirectoryQueryOptions()).data.users;
-  const onInputChange = (next: Partial<PostsListInput>) => void navigate({ search: (previous) => ({ ...previous, ...next }) });
-  return <PostsPage data={posts} input={search} tags={tags} users={users} onInputChange={onInputChange} />;
+  const onInputChange = (next: Partial<PostsListInput>) =>
+    void navigate({ search: (previous) => ({ ...previous, ...next }) });
+  return (
+    <PostsPage
+      data={posts}
+      input={search}
+      tags={tags}
+      users={users}
+      onInputChange={onInputChange}
+    />
+  );
 }

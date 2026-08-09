@@ -6,7 +6,10 @@ import { RouteErrorState, RoutePendingState } from "#/shared/components/route-st
 import { parseNumericId } from "#/shared/lib/route-params";
 
 export const Route = createFileRoute("/(protected)/_admin/users/$userId")({
-  loader: ({ context, params }) => context.queryClient.ensureQueryData(userDetailQueryOptions(parseNumericId(params.userId, "user id"))),
+  loader: ({ context, params }) =>
+    context.queryClient.ensureQueryData(
+      userDetailQueryOptions(parseNumericId(params.userId, "user id")),
+    ),
   pendingComponent: () => <RoutePendingState label="Loading user…" />,
   errorComponent: ({ error, reset }) => <RouteErrorState error={error} reset={reset} />,
   component: UserLayoutRoute,
@@ -15,5 +18,9 @@ export const Route = createFileRoute("/(protected)/_admin/users/$userId")({
 function UserLayoutRoute() {
   const { userId } = Route.useParams();
   const { data } = useSuspenseQuery(userDetailQueryOptions(parseNumericId(userId, "user id")));
-  return <UserDetailPage user={data}><Outlet /></UserDetailPage>;
+  return (
+    <UserDetailPage user={data}>
+      <Outlet />
+    </UserDetailPage>
+  );
 }

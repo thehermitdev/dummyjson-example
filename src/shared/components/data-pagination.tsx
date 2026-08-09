@@ -20,9 +20,7 @@ interface DataPaginationProps {
 
 function getPages(page: number, totalPages: number) {
   const pages = new Set([1, totalPages, page - 1, page, page + 1]);
-  return [...pages]
-    .filter((value) => value >= 1 && value <= totalPages)
-    .sort((a, b) => a - b);
+  return [...pages].filter((value) => value >= 1 && value <= totalPages).sort((a, b) => a - b);
 }
 
 export function DataPagination({
@@ -58,10 +56,7 @@ export function DataPagination({
       <Pagination className="mx-0 w-auto justify-end">
         <PaginationContent>
           <PaginationItem>
-            <PaginationPrevious
-              disabled={page <= 1}
-              onClick={() => onPageChange(page - 1)}
-            />
+            <PaginationPrevious disabled={page <= 1} onClick={() => onPageChange(page - 1)} />
           </PaginationItem>
           {pages.map((value, index) => {
             const previous = pages[index - 1];
@@ -73,10 +68,7 @@ export function DataPagination({
                   </PaginationItem>
                 ) : null}
                 <PaginationItem>
-                  <PaginationButton
-                    active={value === page}
-                    onClick={() => onPageChange(value)}
-                  >
+                  <PaginationButton active={value === page} onClick={() => onPageChange(value)}>
                     {value}
                   </PaginationButton>
                 </PaginationItem>
@@ -84,10 +76,7 @@ export function DataPagination({
             );
           })}
           <PaginationItem>
-            <PaginationNext
-              disabled={page >= totalPages}
-              onClick={() => onPageChange(page + 1)}
-            />
+            <PaginationNext disabled={page >= totalPages} onClick={() => onPageChange(page + 1)} />
           </PaginationItem>
         </PaginationContent>
       </Pagination>

@@ -6,9 +6,16 @@ import { RouteErrorState, RoutePendingState } from "#/shared/components/route-st
 import { parseNumericId } from "#/shared/lib/route-params";
 
 export const Route = createFileRoute("/(protected)/_admin/users/$userId/posts")({
-  loader: ({ context, params }) => context.queryClient.ensureQueryData(userPostsQueryOptions(parseNumericId(params.userId, "user id"))),
+  loader: ({ context, params }) =>
+    context.queryClient.ensureQueryData(
+      userPostsQueryOptions(parseNumericId(params.userId, "user id")),
+    ),
   pendingComponent: () => <RoutePendingState label="Loading user posts…" />,
   errorComponent: ({ error, reset }) => <RouteErrorState error={error} reset={reset} />,
   component: UserPostsRoute,
 });
-function UserPostsRoute() { const { userId } = Route.useParams(); const { data } = useSuspenseQuery(userPostsQueryOptions(parseNumericId(userId, "user id"))); return <UserPostsPanel data={data} />; }
+function UserPostsRoute() {
+  const { userId } = Route.useParams();
+  const { data } = useSuspenseQuery(userPostsQueryOptions(parseNumericId(userId, "user id")));
+  return <UserPostsPanel data={data} />;
+}

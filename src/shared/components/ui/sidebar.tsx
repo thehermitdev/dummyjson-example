@@ -55,17 +55,12 @@ export function SidebarProvider({
 
   return (
     <SidebarContext.Provider value={value}>
-      <div className="flex min-h-svh w-full bg-sidebar p-0 md:p-2">
-        {children}
-      </div>
+      <div className="flex min-h-svh w-full bg-sidebar p-0 md:p-2">{children}</div>
     </SidebarContext.Provider>
   );
 }
 
-export function Sidebar({
-  children,
-  className,
-}: React.PropsWithChildren<{ className?: string }>) {
+export function Sidebar({ children, className }: React.PropsWithChildren<{ className?: string }>) {
   const { open, openMobile, setOpenMobile } = useSidebar();
 
   return (
@@ -97,10 +92,7 @@ export function Sidebar({
   );
 }
 
-export function SidebarInset({
-  className,
-  ...props
-}: React.ComponentProps<"main">) {
+export function SidebarInset({ className, ...props }: React.ComponentProps<"main">) {
   return (
     <main
       className={cn(
@@ -170,12 +162,7 @@ export function SidebarMenuItem(props: React.ComponentProps<"li">) {
 }
 
 export function SidebarMenuSub(props: React.ComponentProps<"ul">) {
-  return (
-    <ul
-      {...props}
-      className={cn("ml-5 space-y-1 border-l pl-3", props.className)}
-    />
-  );
+  return <ul {...props} className={cn("ml-5 space-y-1 border-l pl-3", props.className)} />;
 }
 
 export function SidebarMenuSubItem(props: React.ComponentProps<"li">) {

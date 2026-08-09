@@ -9,7 +9,10 @@ export interface CartsListInput {
   userId?: number | undefined;
 }
 
-export async function getCarts(input: CartsListInput, signal: AbortSignal): Promise<CartsListResponse> {
+export async function getCarts(
+  input: CartsListInput,
+  signal: AbortSignal,
+): Promise<CartsListResponse> {
   const params = { limit: input.pageSize, skip: (input.page - 1) * input.pageSize };
   const endpoint = input.userId ? `/carts/user/${input.userId}` : "/carts";
   const response = await httpClient.get(endpoint, { params, signal });

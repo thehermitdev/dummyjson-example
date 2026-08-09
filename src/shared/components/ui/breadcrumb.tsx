@@ -11,7 +11,10 @@ export function BreadcrumbList(props: React.ComponentProps<"ol">) {
   return (
     <ol
       {...props}
-      className={cn("flex flex-wrap items-center gap-1.5 text-sm text-muted-foreground", props.className)}
+      className={cn(
+        "flex flex-wrap items-center gap-1.5 text-sm text-muted-foreground",
+        props.className,
+      )}
     />
   );
 }
@@ -22,15 +25,18 @@ export function BreadcrumbItem(props: React.ComponentProps<"li">) {
 
 export function BreadcrumbLink(props: React.ComponentProps<"a">) {
   return (
-    <a
-      {...props}
-      className={cn("transition-colors hover:text-foreground", props.className)}
-    />
+    <a {...props} className={cn("transition-colors hover:text-foreground", props.className)} />
   );
 }
 
 export function BreadcrumbPage(props: React.ComponentProps<"span">) {
-  return <span {...props} aria-current="page" className={cn("font-medium text-foreground", props.className)} />;
+  return (
+    <span
+      {...props}
+      aria-current="page"
+      className={cn("font-medium text-foreground", props.className)}
+    />
+  );
 }
 
 export function BreadcrumbSeparator({ children, ...props }: React.ComponentProps<"li">) {
