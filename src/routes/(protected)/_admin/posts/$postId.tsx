@@ -3,7 +3,8 @@ import { createFileRoute } from "@tanstack/react-router";
 
 import { PostDetailPage, postCommentsQueryOptions, postDetailQueryOptions } from "#/features/posts";
 import { usersDirectoryQueryOptions } from "#/features/users";
-import { RouteErrorState, RoutePendingState } from "#/shared/components/route-state";
+import { PostDetailSkeleton } from "#/shared/components/api-skeletons";
+import { RouteErrorState } from "#/shared/components/route-state";
 import { parseNumericId } from "#/shared/lib/route-params";
 
 export const Route = createFileRoute("/(protected)/_admin/posts/$postId")({
@@ -15,10 +16,11 @@ export const Route = createFileRoute("/(protected)/_admin/posts/$postId")({
       context.queryClient.ensureQueryData(usersDirectoryQueryOptions()),
     ]);
   },
-  pendingComponent: () => <RoutePendingState label="Loading post…" />,
+  pendingComponent: PostDetailSkeleton,
   errorComponent: ({ error, reset }) => <RouteErrorState error={error} reset={reset} />,
   component: PostRoute,
 });
+
 function PostRoute() {
   const { postId: value } = Route.useParams();
   const postId = parseNumericId(value, "post id");

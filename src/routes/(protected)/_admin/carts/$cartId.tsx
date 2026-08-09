@@ -3,7 +3,8 @@ import { createFileRoute } from "@tanstack/react-router";
 
 import { CartDetailPage, cartDetailQueryOptions } from "#/features/carts";
 import { usersDirectoryQueryOptions } from "#/features/users";
-import { RouteErrorState, RoutePendingState } from "#/shared/components/route-state";
+import { DetailPageSkeleton } from "#/shared/components/api-skeletons";
+import { RouteErrorState } from "#/shared/components/route-state";
 import { parseNumericId } from "#/shared/lib/route-params";
 
 export const Route = createFileRoute("/(protected)/_admin/carts/$cartId")({
@@ -14,10 +15,11 @@ export const Route = createFileRoute("/(protected)/_admin/carts/$cartId")({
       context.queryClient.ensureQueryData(usersDirectoryQueryOptions()),
     ]);
   },
-  pendingComponent: () => <RoutePendingState label="Loading cart…" />,
+  pendingComponent: DetailPageSkeleton,
   errorComponent: ({ error, reset }) => <RouteErrorState error={error} reset={reset} />,
   component: CartRoute,
 });
+
 function CartRoute() {
   const { cartId: value } = Route.useParams();
   const cartId = parseNumericId(value, "cart id");

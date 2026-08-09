@@ -1,6 +1,8 @@
 import type { CartsListResponse } from "../api/contracts";
 import type { CartsListInput } from "../api/queries";
+import { FetchingSkeletonBar } from "#/shared/components/api-skeletons";
 import { DataPagination } from "#/shared/components/data-pagination";
+import { AppLink } from "#/shared/components/navigation/app-link";
 
 interface UserOption {
   id: number;
@@ -12,14 +14,17 @@ export function CartsPage({
   data,
   input,
   users,
+  isFetching = false,
   onInputChange,
 }: {
   data: CartsListResponse;
   input: CartsListInput;
   users: Array<UserOption>;
+  isFetching?: boolean;
   onInputChange: (next: Partial<CartsListInput>) => void;
 }) {
   const userMap = new Map(users.map((user) => [user.id, `${user.firstName} ${user.lastName}`]));
+
   return (
     <div className="space-y-6">
       <div>
@@ -29,6 +34,7 @@ export function CartsPage({
           Inspect shopping carts and ownership relationships from DummyJSON.
         </p>
       </div>
+
       <div className="overflow-hidden rounded-xl border bg-card shadow-xs">
         <div className="flex flex-col gap-3 border-b p-4 sm:flex-row sm:items-center sm:justify-between">
           <select
@@ -50,6 +56,9 @@ export function CartsPage({
           </select>
           <p className="text-sm text-muted-foreground">{data.total} carts</p>
         </div>
+
+        <FetchingSkeletonBar show={isFetching} />
+
         <div className="overflow-x-auto">
           <table className="w-full text-left text-sm">
             <thead className="border-b bg-muted/40 text-xs text-muted-foreground">
@@ -65,9 +74,13 @@ export function CartsPage({
               {data.carts.map((cart) => (
                 <tr key={cart.id} className="hover:bg-muted/30">
                   <td className="px-4 py-3">
-                    <a className="font-medium hover:underline" href={`/carts/${cart.id}`}>
+                    <AppLink
+                      to="/carts/$cartId"
+                      params={{ cartId: String(cart.id) }}
+                      className="font-medium hover:underline"
+                    >
                       Cart #{cart.id}
-                    </a>
+                    </AppLink>
                   </td>
                   <td className="px-4 py-3 text-muted-foreground">
                     {userMap.get(cart.userId) ?? `User #${cart.userId}`}
@@ -82,6 +95,7 @@ export function CartsPage({
             </tbody>
           </table>
         </div>
+
         <DataPagination
           page={input.page}
           pageSize={input.pageSize}

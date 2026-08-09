@@ -1,8 +1,9 @@
-import { Outlet, createFileRoute } from "@tanstack/react-router";
 import { useSuspenseQuery } from "@tanstack/react-query";
+import { Outlet, createFileRoute } from "@tanstack/react-router";
 
 import { UserDetailPage, userDetailQueryOptions } from "#/features/users";
-import { RouteErrorState, RoutePendingState } from "#/shared/components/route-state";
+import { DetailPageSkeleton } from "#/shared/components/api-skeletons";
+import { RouteErrorState } from "#/shared/components/route-state";
 import { parseNumericId } from "#/shared/lib/route-params";
 
 export const Route = createFileRoute("/(protected)/_admin/users/$userId")({
@@ -10,7 +11,7 @@ export const Route = createFileRoute("/(protected)/_admin/users/$userId")({
     context.queryClient.ensureQueryData(
       userDetailQueryOptions(parseNumericId(params.userId, "user id")),
     ),
-  pendingComponent: () => <RoutePendingState label="Loading user…" />,
+  pendingComponent: DetailPageSkeleton,
   errorComponent: ({ error, reset }) => <RouteErrorState error={error} reset={reset} />,
   component: UserLayoutRoute,
 });

@@ -11,8 +11,10 @@ import {
 } from "../api/mutations";
 import type { CreateTodoInput, Todo, TodosListResponse } from "../api/contracts";
 import type { TodosListInput } from "../api/queries";
+import { FetchingSkeletonBar } from "#/shared/components/api-skeletons";
 import { ConfirmDeleteDialog } from "#/shared/components/confirm-delete-dialog";
 import { DataPagination } from "#/shared/components/data-pagination";
+import { RouterButton } from "#/shared/components/navigation/router-button";
 import { Alert, AlertDescription, AlertTitle } from "#/shared/components/ui/alert";
 import { Button } from "#/shared/components/ui/button";
 import {
@@ -30,15 +32,24 @@ interface UserOption {
   firstName: string;
   lastName: string;
 }
+
 interface TodosPageProps {
   data: TodosListResponse;
   input: TodosListInput;
   users: Array<UserOption>;
+  isFetching?: boolean;
   onInputChange: (next: Partial<TodosListInput>) => void;
 }
+
 const emptyForm: CreateTodoInput = { todo: "", completed: false, userId: 1 };
 
-export function TodosPage({ data, input, users, onInputChange }: TodosPageProps) {
+export function TodosPage({
+  data,
+  input,
+  users,
+  isFetching = false,
+  onInputChange,
+}: TodosPageProps) {
   const queryClient = useQueryClient();
   const addMutation = useMutation(addTodoMutationOptions(queryClient));
   const updateMutation = useMutation(updateTodoMutationOptions(queryClient));
@@ -48,6 +59,7 @@ export function TodosPage({ data, input, users, onInputChange }: TodosPageProps)
   const [form, setForm] = React.useState<CreateTodoInput>(emptyForm);
   const [formError, setFormError] = React.useState<string | null>(null);
   const [deleting, setDeleting] = React.useState<Todo | null>(null);
+
   const userMap = React.useMemo(
     () => new Map(users.map((user) => [user.id, `${user.firstName} ${user.lastName}`])),
     [users],
@@ -59,6 +71,7 @@ export function TodosPage({ data, input, users, onInputChange }: TodosPageProps)
     setFormError(null);
     setDrawerOpen(true);
   };
+
   const openEdit = (todo: Todo) => {
     setEditing(todo);
     setForm({ todo: todo.todo, completed: todo.completed, userId: todo.userId });
@@ -73,6 +86,8 @@ export function TodosPage({ data, input, users, onInputChange }: TodosPageProps)
       setFormError(parsed.error.issues[0]?.message ?? "Please review the task fields.");
       return;
     }
+
+    setFormError(null);
     try {
       if (editing) {
         await updateMutation.mutateAsync({ todo: editing, input: parsed.data });
@@ -116,6 +131,7 @@ export function TodosPage({ data, input, users, onInputChange }: TodosPageProps)
           <Plus className="size-4" /> Add Task
         </Button>
       </div>
+
       <div className="overflow-hidden rounded-xl border bg-card shadow-xs">
         <div className="flex flex-col gap-3 border-b p-4 sm:flex-row sm:items-center sm:justify-between">
           <select
@@ -137,6 +153,9 @@ export function TodosPage({ data, input, users, onInputChange }: TodosPageProps)
           </select>
           <p className="text-sm text-muted-foreground">{data.total} tasks</p>
         </div>
+
+        <FetchingSkeletonBar show={isFetching} />
+
         <div className="overflow-x-auto">
           <table className="w-full text-left text-sm">
             <thead className="border-b bg-muted/40 text-xs text-muted-foreground">
@@ -151,9 +170,14 @@ export function TodosPage({ data, input, users, onInputChange }: TodosPageProps)
               {data.todos.map((todo) => (
                 <tr key={todo.id} className="hover:bg-muted/30">
                   <td className="px-4 py-3">
-                    <a href={`/todos/${todo.id}`} className="font-medium hover:underline">
+                    <RouterButton
+                      to="/todos/$todoId"
+                      params={{ todoId: String(todo.id) }}
+                      variant="link"
+                      className="h-auto justify-start p-0 font-medium"
+                    >
                       {todo.todo}
-                    </a>
+                    </RouterButton>
                   </td>
                   <td className="px-4 py-3 text-muted-foreground">
                     {userMap.get(todo.userId) ?? `User #${todo.userId}`}
@@ -167,18 +191,22 @@ export function TodosPage({ data, input, users, onInputChange }: TodosPageProps)
                   </td>
                   <td className="px-4 py-3">
                     <div className="flex justify-end gap-1">
-                      <Button
+                      <RouterButton
+                        to="/todos/$todoId"
+                        params={{ todoId: String(todo.id) }}
                         variant="ghost"
                         size="icon-sm"
-                        render={<a href={`/todos/${todo.id}`} />}
                       >
                         <Eye className="size-4" />
-                      </Button>
+                        <span className="sr-only">View task</span>
+                      </RouterButton>
                       <Button variant="ghost" size="icon-sm" onClick={() => openEdit(todo)}>
                         <Pencil className="size-4" />
+                        <span className="sr-only">Edit task</span>
                       </Button>
                       <Button variant="ghost" size="icon-sm" onClick={() => setDeleting(todo)}>
                         <Trash2 className="size-4" />
+                        <span className="sr-only">Delete task</span>
                       </Button>
                     </div>
                   </td>
@@ -187,6 +215,7 @@ export function TodosPage({ data, input, users, onInputChange }: TodosPageProps)
             </tbody>
           </table>
         </div>
+
         <DataPagination
           page={input.page}
           pageSize={input.pageSize}
@@ -240,6 +269,7 @@ export function TodosPage({ data, input, users, onInputChange }: TodosPageProps)
                   <span>Mark as completed</span>
                 </label>
               </div>
+
               {formError ? (
                 <Alert variant="destructive" className="mt-5">
                   <AlertTitle>Unable to save task</AlertTitle>
@@ -248,7 +278,12 @@ export function TodosPage({ data, input, users, onInputChange }: TodosPageProps)
               ) : null}
             </DrawerBody>
             <DrawerFooter>
-              <Button type="button" variant="outline" onClick={() => setDrawerOpen(false)}>
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => setDrawerOpen(false)}
+                disabled={addMutation.isPending || updateMutation.isPending}
+              >
                 Cancel
               </Button>
               <Button type="submit" disabled={addMutation.isPending || updateMutation.isPending}>
@@ -258,12 +293,17 @@ export function TodosPage({ data, input, users, onInputChange }: TodosPageProps)
           </form>
         </DrawerContent>
       </Drawer>
+
       <ConfirmDeleteDialog
         open={Boolean(deleting)}
-        onOpenChange={(open) => !open && setDeleting(null)}
+        onOpenChange={(open) => {
+          if (!open) setDeleting(null);
+        }}
         title="Delete task?"
         description={
-          deleting ? `This will simulate deleting “${deleting.todo}”.` : "Delete the selected task."
+          deleting
+            ? `Delete “${deleting.todo}” from the current demo session?`
+            : "Delete this task?"
         }
         pending={deleteMutation.isPending}
         onConfirm={() => void confirmDelete()}

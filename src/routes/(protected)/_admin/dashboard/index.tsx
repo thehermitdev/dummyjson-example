@@ -6,7 +6,8 @@ import { DashboardPage } from "#/features/dashboard";
 import { postsListQueryOptions } from "#/features/posts";
 import { todosListQueryOptions } from "#/features/todos";
 import { usersListQueryOptions } from "#/features/users";
-import { RouteErrorState, RoutePendingState } from "#/shared/components/route-state";
+import { DashboardPageSkeleton } from "#/shared/components/api-skeletons";
+import { RouteErrorState } from "#/shared/components/route-state";
 
 const usersInput = { page: 1, pageSize: 5 };
 const singlePage = { page: 1, pageSize: 1 };
@@ -19,7 +20,7 @@ export const Route = createFileRoute("/(protected)/_admin/dashboard/")({
       context.queryClient.ensureQueryData(cartsListQueryOptions(singlePage)),
       context.queryClient.ensureQueryData(todosListQueryOptions(singlePage)),
     ]),
-  pendingComponent: () => <RoutePendingState label="Loading dashboard…" />,
+  pendingComponent: DashboardPageSkeleton,
   errorComponent: ({ error, reset }) => <RouteErrorState error={error} reset={reset} />,
   head: () => ({ meta: [{ title: "Dashboard · DummyJSON Admin" }] }),
   component: DashboardRoute,

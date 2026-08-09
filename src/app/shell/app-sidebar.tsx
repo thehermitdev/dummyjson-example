@@ -1,5 +1,5 @@
 import * as React from "react";
-import { Link, useRouterState } from "@tanstack/react-router";
+import { useRouterState } from "@tanstack/react-router";
 import {
   CheckSquare2,
   ChevronRight,
@@ -11,6 +11,7 @@ import {
 } from "lucide-react";
 
 import { ClerkProfile } from "#/app/auth/clerk-profile";
+import { AppLink } from "#/shared/components/navigation/app-link";
 import {
   Sidebar,
   SidebarContent,
@@ -67,7 +68,7 @@ export function AppSidebar() {
   return (
     <Sidebar>
       <SidebarHeader>
-        <Link
+        <AppLink
           to="/dashboard"
           onClick={() => setOpenMobile(false)}
           className="flex items-center gap-3 rounded-lg px-2 py-2 hover:bg-sidebar-accent"
@@ -83,7 +84,7 @@ export function AppSidebar() {
               </span>
             </span>
           ) : null}
-        </Link>
+        </AppLink>
       </SidebarHeader>
 
       <SidebarContent>
@@ -127,7 +128,7 @@ export function AppSidebar() {
                     <SidebarMenuSub>
                       {module.items.map((item) => (
                         <SidebarMenuSubItem key={item.to}>
-                          <Link
+                          <AppLink
                             to={item.to}
                             onClick={() => setOpenMobile(false)}
                             className={cn(
@@ -137,7 +138,7 @@ export function AppSidebar() {
                             )}
                           >
                             {item.label}
-                          </Link>
+                          </AppLink>
                         </SidebarMenuSubItem>
                       ))}
                     </SidebarMenuSub>

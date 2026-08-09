@@ -11,8 +11,11 @@ import {
 } from "../api/mutations";
 import type { CreatePostInput, Post, PostsListResponse } from "../api/contracts";
 import type { PostsListInput } from "../api/queries";
+import { FetchingSkeletonBar } from "#/shared/components/api-skeletons";
 import { ConfirmDeleteDialog } from "#/shared/components/confirm-delete-dialog";
 import { DataPagination } from "#/shared/components/data-pagination";
+import { AppLink } from "#/shared/components/navigation/app-link";
+import { RouterButton } from "#/shared/components/navigation/router-button";
 import { Alert, AlertDescription, AlertTitle } from "#/shared/components/ui/alert";
 import { Button } from "#/shared/components/ui/button";
 import {
@@ -24,6 +27,7 @@ import {
   DrawerHeader,
   DrawerTitle,
 } from "#/shared/components/ui/drawer";
+import { useDebouncedValue } from "#/shared/hooks/use-debounced-value";
 
 interface UserOption {
   id: number;
@@ -31,12 +35,17 @@ interface UserOption {
   lastName: string;
 }
 
+interface ListUpdateOptions {
+  replace?: boolean;
+}
+
 interface PostsPageProps {
   data: PostsListResponse;
   input: PostsListInput;
   tags: Array<string>;
   users: Array<UserOption>;
-  onInputChange: (next: Partial<PostsListInput>) => void;
+  isFetching?: boolean;
+  onInputChange: (next: Partial<PostsListInput>, options?: ListUpdateOptions) => void;
 }
 
 const emptyForm: CreatePostInput = {
@@ -46,12 +55,21 @@ const emptyForm: CreatePostInput = {
   userId: 1,
 };
 
-export function PostsPage({ data, input, tags, users, onInputChange }: PostsPageProps) {
+export function PostsPage({
+  data,
+  input,
+  tags,
+  users,
+  isFetching = false,
+  onInputChange,
+}: PostsPageProps) {
   const queryClient = useQueryClient();
   const addMutation = useMutation(addPostMutationOptions(queryClient));
   const updateMutation = useMutation(updatePostMutationOptions(queryClient));
   const deleteMutation = useMutation(deletePostMutationOptions(queryClient));
-  const [search, setSearch] = React.useState(input.q ?? "");
+
+  const [searchDraft, setSearchDraft] = React.useState(input.q ?? "");
+  const debouncedSearch = useDebouncedValue(searchDraft, 600);
   const [drawerOpen, setDrawerOpen] = React.useState(false);
   const [editing, setEditing] = React.useState<Post | null>(null);
   const [form, setForm] = React.useState<CreatePostInput>(emptyForm);
@@ -62,6 +80,25 @@ export function PostsPage({ data, input, tags, users, onInputChange }: PostsPage
     () => new Map(users.map((user) => [user.id, `${user.firstName} ${user.lastName}`])),
     [users],
   );
+
+  React.useEffect(() => {
+    setSearchDraft(input.q ?? "");
+  }, [input.q]);
+
+  React.useEffect(() => {
+    const q = debouncedSearch.trim() || undefined;
+    if (q === input.q) return;
+
+    onInputChange(
+      {
+        q,
+        tag: undefined,
+        userId: undefined,
+        page: 1,
+      },
+      { replace: true },
+    );
+  }, [debouncedSearch, input.q, onInputChange]);
 
   const openAdd = () => {
     setEditing(null);
@@ -84,6 +121,8 @@ export function PostsPage({ data, input, tags, users, onInputChange }: PostsPage
       setFormError(parsed.error.issues[0]?.message ?? "Please review the post fields.");
       return;
     }
+
+    setFormError(null);
     try {
       if (editing) {
         await updateMutation.mutateAsync({ post: editing, input: parsed.data });
@@ -130,29 +169,28 @@ export function PostsPage({ data, input, tags, users, onInputChange }: PostsPage
 
       <div className="overflow-hidden rounded-xl border bg-card shadow-xs">
         <div className="grid gap-3 border-b p-4 xl:grid-cols-[minmax(220px,1fr)_170px_200px_150px_130px_auto]">
-          <form
-            className="flex gap-2"
-            onSubmit={(event) => {
-              event.preventDefault();
-              onInputChange({ q: search.trim() || undefined, tag: undefined, page: 1 });
-            }}
-          >
+          <label className="relative block">
+            <Search className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
             <input
-              value={search}
-              onChange={(event) => setSearch(event.target.value)}
+              value={searchDraft}
+              onChange={(event) => setSearchDraft(event.target.value)}
               placeholder="Search posts…"
-              className="h-9 min-w-0 flex-1 rounded-md border bg-background px-3 text-sm"
+              aria-label="Search posts"
+              className="h-9 w-full rounded-md border bg-background pl-9 pr-3 text-sm"
             />
-            <Button type="submit" variant="outline" size="icon">
-              <Search className="size-4" />
-            </Button>
-          </form>
+          </label>
 
           <select
             value={input.tag ?? ""}
-            onChange={(event) =>
-              onInputChange({ tag: event.target.value || undefined, q: undefined, page: 1 })
-            }
+            onChange={(event) => {
+              setSearchDraft("");
+              onInputChange({
+                tag: event.target.value || undefined,
+                q: undefined,
+                userId: undefined,
+                page: 1,
+              });
+            }}
             className="h-9 rounded-md border bg-background px-3 text-sm"
           >
             <option value="">All tags</option>
@@ -165,13 +203,15 @@ export function PostsPage({ data, input, tags, users, onInputChange }: PostsPage
 
           <select
             value={input.userId ?? ""}
-            onChange={(event) =>
+            onChange={(event) => {
+              setSearchDraft("");
               onInputChange({
                 userId: event.target.value ? Number(event.target.value) : undefined,
                 q: undefined,
+                tag: undefined,
                 page: 1,
-              })
-            }
+              });
+            }}
             className="h-9 rounded-md border bg-background px-3 text-sm"
           >
             <option value="">All authors</option>
@@ -209,13 +249,12 @@ export function PostsPage({ data, input, tags, users, onInputChange }: PostsPage
             <option value="desc">Descending</option>
           </select>
 
-          <a
-            href="/posts/tags"
-            className="inline-flex h-9 items-center justify-center rounded-md border px-3 text-sm font-medium hover:bg-muted"
-          >
+          <RouterButton to="/posts/tags" variant="outline" size="sm">
             Browse tags
-          </a>
+          </RouterButton>
         </div>
+
+        <FetchingSkeletonBar show={isFetching} />
 
         <div className="overflow-x-auto">
           <table className="w-full text-left text-sm">
@@ -232,9 +271,13 @@ export function PostsPage({ data, input, tags, users, onInputChange }: PostsPage
               {data.posts.map((post) => (
                 <tr key={post.id} className="hover:bg-muted/30">
                   <td className="max-w-xl px-4 py-3">
-                    <a href={`/posts/${post.id}`} className="font-medium hover:underline">
+                    <AppLink
+                      to="/posts/$postId"
+                      params={{ postId: String(post.id) }}
+                      className="font-medium hover:underline"
+                    >
                       {post.title}
-                    </a>
+                    </AppLink>
                     <p className="mt-1 line-clamp-1 text-xs text-muted-foreground">{post.body}</p>
                   </td>
                   <td className="px-4 py-3 text-muted-foreground">
@@ -243,9 +286,14 @@ export function PostsPage({ data, input, tags, users, onInputChange }: PostsPage
                   <td className="px-4 py-3">
                     <div className="flex max-w-52 flex-wrap gap-1">
                       {post.tags.slice(0, 3).map((tag) => (
-                        <span key={tag} className="rounded-full bg-muted px-2 py-0.5 text-xs">
+                        <AppLink
+                          key={tag}
+                          to="/posts"
+                          search={{ page: 1, pageSize: input.pageSize, tag, order: "asc" }}
+                          className="rounded-full bg-muted px-2 py-0.5 text-xs hover:bg-muted/70"
+                        >
                           {tag}
-                        </span>
+                        </AppLink>
                       ))}
                     </div>
                   </td>
@@ -254,18 +302,22 @@ export function PostsPage({ data, input, tags, users, onInputChange }: PostsPage
                   </td>
                   <td className="px-4 py-3">
                     <div className="flex justify-end gap-1">
-                      <Button
+                      <RouterButton
+                        to="/posts/$postId"
+                        params={{ postId: String(post.id) }}
                         variant="ghost"
                         size="icon-sm"
-                        render={<a href={`/posts/${post.id}`} />}
                       >
                         <Eye className="size-4" />
-                      </Button>
+                        <span className="sr-only">View post</span>
+                      </RouterButton>
                       <Button variant="ghost" size="icon-sm" onClick={() => openEdit(post)}>
                         <Pencil className="size-4" />
+                        <span className="sr-only">Edit post</span>
                       </Button>
                       <Button variant="ghost" size="icon-sm" onClick={() => setDeleting(post)}>
                         <Trash2 className="size-4" />
+                        <span className="sr-only">Delete post</span>
                       </Button>
                     </div>
                   </td>
@@ -274,6 +326,7 @@ export function PostsPage({ data, input, tags, users, onInputChange }: PostsPage
             </tbody>
           </table>
         </div>
+
         <DataPagination
           page={input.page}
           pageSize={input.pageSize}
@@ -289,7 +342,9 @@ export function PostsPage({ data, input, tags, users, onInputChange }: PostsPage
             <DrawerHeader>
               <DrawerTitle>{editing ? "Update post" : "Add post"}</DrawerTitle>
               <DrawerDescription>
-                Posts are always attributed to a DummyJSON user.
+                {editing
+                  ? "Update the simulated post."
+                  : "Create a simulated post through /posts/add."}
               </DrawerDescription>
             </DrawerHeader>
             <DrawerBody>
@@ -308,18 +363,19 @@ export function PostsPage({ data, input, tags, users, onInputChange }: PostsPage
                     rows={8}
                     value={form.body}
                     onChange={(event) => setForm({ ...form, body: event.target.value })}
-                    className="field-input min-h-32"
+                    className="field-input min-h-36"
                   />
                 </Field>
                 <Field label="Tags (comma separated)">
                   <input
+                    required
                     value={form.tags.join(", ")}
                     onChange={(event) =>
                       setForm({
                         ...form,
                         tags: event.target.value
                           .split(",")
-                          .map((value) => value.trim())
+                          .map((tag) => tag.trim())
                           .filter(Boolean),
                       })
                     }
@@ -340,6 +396,7 @@ export function PostsPage({ data, input, tags, users, onInputChange }: PostsPage
                   </select>
                 </Field>
               </div>
+
               {formError ? (
                 <Alert variant="destructive" className="mt-5">
                   <AlertTitle>Unable to save post</AlertTitle>
@@ -348,7 +405,12 @@ export function PostsPage({ data, input, tags, users, onInputChange }: PostsPage
               ) : null}
             </DrawerBody>
             <DrawerFooter>
-              <Button type="button" variant="outline" onClick={() => setDrawerOpen(false)}>
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => setDrawerOpen(false)}
+                disabled={addMutation.isPending || updateMutation.isPending}
+              >
                 Cancel
               </Button>
               <Button type="submit" disabled={addMutation.isPending || updateMutation.isPending}>
@@ -361,12 +423,14 @@ export function PostsPage({ data, input, tags, users, onInputChange }: PostsPage
 
       <ConfirmDeleteDialog
         open={Boolean(deleting)}
-        onOpenChange={(open) => !open && setDeleting(null)}
+        onOpenChange={(open) => {
+          if (!open) setDeleting(null);
+        }}
         title="Delete post?"
         description={
           deleting
-            ? `This will simulate deleting “${deleting.title}”.`
-            : "Delete the selected post."
+            ? `Delete “${deleting.title}” from the current demo session?`
+            : "Delete this post?"
         }
         pending={deleteMutation.isPending}
         onConfirm={() => void confirmDelete()}

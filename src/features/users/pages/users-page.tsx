@@ -11,6 +11,9 @@ import {
 } from "../api/mutations";
 import type { CreateUserInput, User, UsersListResponse } from "../api/contracts";
 import type { UsersListInput } from "../api/queries";
+import { AppLink } from "#/shared/components/navigation/app-link";
+import { RouterButton } from "#/shared/components/navigation/router-button";
+import { FetchingSkeletonBar } from "#/shared/components/api-skeletons";
 import { ConfirmDeleteDialog } from "#/shared/components/confirm-delete-dialog";
 import { DataPagination } from "#/shared/components/data-pagination";
 import { Alert, AlertDescription, AlertTitle } from "#/shared/components/ui/alert";
@@ -24,11 +27,17 @@ import {
   DrawerHeader,
   DrawerTitle,
 } from "#/shared/components/ui/drawer";
+import { useDebouncedValue } from "#/shared/hooks/use-debounced-value";
+
+interface ListUpdateOptions {
+  replace?: boolean;
+}
 
 interface UsersPageProps {
   data: UsersListResponse;
   input: UsersListInput;
-  onInputChange: (next: Partial<UsersListInput>) => void;
+  isFetching?: boolean;
+  onInputChange: (next: Partial<UsersListInput>, options?: ListUpdateOptions) => void;
 }
 
 const emptyForm: CreateUserInput = {
@@ -57,18 +66,60 @@ function formFromUser(user: User): CreateUserInput {
   };
 }
 
-export function UsersPage({ data, input, onInputChange }: UsersPageProps) {
+export function UsersPage({ data, input, isFetching = false, onInputChange }: UsersPageProps) {
   const queryClient = useQueryClient();
   const addMutation = useMutation(addUserMutationOptions(queryClient));
   const updateMutation = useMutation(updateUserMutationOptions(queryClient));
   const deleteMutation = useMutation(deleteUserMutationOptions(queryClient));
 
-  const [search, setSearch] = React.useState(input.q ?? "");
+  const [searchDraft, setSearchDraft] = React.useState(input.q ?? "");
+  const [filterDraft, setFilterDraft] = React.useState(input.filterValue ?? "");
+  const debouncedSearch = useDebouncedValue(searchDraft, 600);
+  const debouncedFilter = useDebouncedValue(filterDraft, 600);
+
   const [drawerOpen, setDrawerOpen] = React.useState(false);
   const [editing, setEditing] = React.useState<User | null>(null);
   const [form, setForm] = React.useState<CreateUserInput>(emptyForm);
   const [formError, setFormError] = React.useState<string | null>(null);
   const [deleting, setDeleting] = React.useState<User | null>(null);
+
+  React.useEffect(() => {
+    setSearchDraft(input.q ?? "");
+  }, [input.q]);
+
+  React.useEffect(() => {
+    setFilterDraft(input.filterValue ?? "");
+  }, [input.filterValue]);
+
+  React.useEffect(() => {
+    const q = debouncedSearch.trim() || undefined;
+    if (q === input.q) return;
+
+    onInputChange(
+      {
+        q,
+        filterKey: undefined,
+        filterValue: undefined,
+        page: 1,
+      },
+      { replace: true },
+    );
+  }, [debouncedSearch, input.q, onInputChange]);
+
+  React.useEffect(() => {
+    if (!input.filterKey) return;
+    const filterValue = debouncedFilter.trim() || undefined;
+    if (filterValue === input.filterValue) return;
+
+    onInputChange(
+      {
+        filterValue,
+        q: undefined,
+        page: 1,
+      },
+      { replace: true },
+    );
+  }, [debouncedFilter, input.filterKey, input.filterValue, onInputChange]);
 
   const openAdd = () => {
     setEditing(null);
@@ -152,38 +203,30 @@ export function UsersPage({ data, input, onInputChange }: UsersPageProps) {
 
       <div className="overflow-hidden rounded-xl border bg-card shadow-xs">
         <div className="grid gap-3 border-b p-4 lg:grid-cols-[minmax(220px,1fr)_180px_180px_140px_auto]">
-          <form
-            className="flex gap-2"
-            onSubmit={(event) => {
-              event.preventDefault();
-              onInputChange({
-                q: search.trim() || undefined,
-                filterKey: undefined,
-                filterValue: undefined,
-                page: 1,
-              });
-            }}
-          >
+          <label className="relative block">
+            <Search className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
             <input
-              value={search}
-              onChange={(event) => setSearch(event.target.value)}
+              value={searchDraft}
+              onChange={(event) => setSearchDraft(event.target.value)}
               placeholder="Search users…"
-              className="h-9 min-w-0 flex-1 rounded-md border bg-background px-3 text-sm outline-none focus:ring-2 focus:ring-ring/30"
+              aria-label="Search users"
+              className="h-9 w-full rounded-md border bg-background pl-9 pr-3 text-sm outline-none focus:ring-2 focus:ring-ring/30"
             />
-            <Button type="submit" variant="outline" size="icon">
-              <Search className="size-4" />
-            </Button>
-          </form>
+          </label>
 
           <select
             value={input.filterKey ?? ""}
-            onChange={(event) =>
+            onChange={(event) => {
+              const filterKey = (event.target.value || undefined) as UsersListInput["filterKey"];
+              setSearchDraft("");
+              setFilterDraft("");
               onInputChange({
-                filterKey: (event.target.value || undefined) as UsersListInput["filterKey"],
+                filterKey,
+                filterValue: undefined,
                 q: undefined,
                 page: 1,
-              })
-            }
+              });
+            }}
             className="h-9 rounded-md border bg-background px-3 text-sm"
           >
             <option value="">Filter field</option>
@@ -193,12 +236,12 @@ export function UsersPage({ data, input, onInputChange }: UsersPageProps) {
           </select>
 
           <input
-            value={input.filterValue ?? ""}
-            onChange={(event) =>
-              onInputChange({ filterValue: event.target.value || undefined, q: undefined, page: 1 })
-            }
-            placeholder="Filter value"
-            className="h-9 rounded-md border bg-background px-3 text-sm"
+            value={filterDraft}
+            disabled={!input.filterKey}
+            onChange={(event) => setFilterDraft(event.target.value)}
+            placeholder={input.filterKey ? "Filter value…" : "Choose filter first"}
+            aria-label="Filter value"
+            className="h-9 rounded-md border bg-background px-3 text-sm disabled:cursor-not-allowed disabled:opacity-50"
           />
 
           <select
@@ -230,6 +273,8 @@ export function UsersPage({ data, input, onInputChange }: UsersPageProps) {
           </select>
         </div>
 
+        <FetchingSkeletonBar show={isFetching} />
+
         <div className="overflow-x-auto">
           <table className="w-full text-left text-sm">
             <thead className="border-b bg-muted/40 text-xs text-muted-foreground">
@@ -253,12 +298,13 @@ export function UsersPage({ data, input, onInputChange }: UsersPageProps) {
                         loading="lazy"
                       />
                       <div className="min-w-0">
-                        <a
-                          href={`/users/${user.id}`}
+                        <AppLink
+                          to="/users/$userId"
+                          params={{ userId: String(user.id) }}
                           className="truncate font-medium hover:underline"
                         >
                           {user.firstName} {user.lastName}
-                        </a>
+                        </AppLink>
                         <p className="truncate text-xs text-muted-foreground">{user.email}</p>
                       </div>
                     </div>
@@ -277,14 +323,15 @@ export function UsersPage({ data, input, onInputChange }: UsersPageProps) {
                   <td className="px-4 py-3 text-muted-foreground">{user.age}</td>
                   <td className="px-4 py-3">
                     <div className="flex justify-end gap-1">
-                      <Button
+                      <RouterButton
+                        to="/users/$userId"
+                        params={{ userId: String(user.id) }}
                         variant="ghost"
                         size="icon-sm"
-                        render={<a href={`/users/${user.id}`} />}
                       >
                         <Eye className="size-4" />
                         <span className="sr-only">View</span>
-                      </Button>
+                      </RouterButton>
                       <Button variant="ghost" size="icon-sm" onClick={() => openEdit(user)}>
                         <Pencil className="size-4" />
                         <span className="sr-only">Edit</span>
@@ -409,6 +456,7 @@ export function UsersPage({ data, input, onInputChange }: UsersPageProps) {
                   />
                 </Field>
               </div>
+
               {formError ? (
                 <Alert variant="destructive" className="mt-5">
                   <AlertTitle>Unable to save user</AlertTitle>
@@ -417,7 +465,12 @@ export function UsersPage({ data, input, onInputChange }: UsersPageProps) {
               ) : null}
             </DrawerBody>
             <DrawerFooter>
-              <Button type="button" variant="outline" onClick={() => setDrawerOpen(false)}>
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => setDrawerOpen(false)}
+                disabled={addMutation.isPending || updateMutation.isPending}
+              >
                 Cancel
               </Button>
               <Button type="submit" disabled={addMutation.isPending || updateMutation.isPending}>
@@ -430,12 +483,14 @@ export function UsersPage({ data, input, onInputChange }: UsersPageProps) {
 
       <ConfirmDeleteDialog
         open={Boolean(deleting)}
-        onOpenChange={(open) => !open && setDeleting(null)}
+        onOpenChange={(open) => {
+          if (!open) setDeleting(null);
+        }}
         title="Delete user?"
         description={
           deleting
-            ? `This will simulate deleting ${deleting.firstName} ${deleting.lastName}.`
-            : "Delete the selected user."
+            ? `Delete ${deleting.firstName} ${deleting.lastName} from the current demo session?`
+            : "Delete this user?"
         }
         pending={deleteMutation.isPending}
         onConfirm={() => void confirmDelete()}

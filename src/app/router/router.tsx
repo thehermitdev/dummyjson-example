@@ -19,6 +19,8 @@ export const router = createTanStackRouter({
   scrollRestoration: true,
   defaultPreload: "intent",
   defaultPreloadStaleTime: 0,
+  defaultPendingMs: 300,
+  defaultPendingMinMs: 400,
 });
 
 declare module "@tanstack/react-router" {
