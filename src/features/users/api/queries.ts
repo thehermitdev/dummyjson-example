@@ -1,4 +1,4 @@
-import { queryOptions } from "@tanstack/react-query";
+import { keepPreviousData, queryOptions } from "@tanstack/react-query";
 
 import {
   getUser,
@@ -27,6 +27,7 @@ export function usersListQueryOptions(input: UsersListInput) {
     queryKey: usersKeys.list(input),
     queryFn: ({ signal }) => getUsers(input, signal),
     staleTime: 60_000,
+    placeholderData: keepPreviousData,
   });
 }
 
@@ -34,6 +35,7 @@ export function userDetailQueryOptions(userId: number) {
   return queryOptions({
     queryKey: usersKeys.detail(userId),
     queryFn: ({ signal }) => getUser(userId, signal),
+    staleTime: 5 * 60_000,
   });
 }
 
@@ -41,7 +43,7 @@ export function usersDirectoryQueryOptions() {
   return queryOptions({
     queryKey: usersKeys.directory(),
     queryFn: ({ signal }) => getUsersDirectory(signal),
-    staleTime: 5 * 60_000,
+    staleTime: 10 * 60_000,
   });
 }
 
@@ -49,6 +51,7 @@ export function userPostsQueryOptions(userId: number) {
   return queryOptions({
     queryKey: usersKeys.posts(userId),
     queryFn: ({ signal }) => getUserPosts(userId, signal),
+    staleTime: 2 * 60_000,
   });
 }
 
@@ -56,6 +59,7 @@ export function userCartsQueryOptions(userId: number) {
   return queryOptions({
     queryKey: usersKeys.carts(userId),
     queryFn: ({ signal }) => getUserCarts(userId, signal),
+    staleTime: 2 * 60_000,
   });
 }
 
@@ -63,6 +67,7 @@ export function userTodosQueryOptions(userId: number) {
   return queryOptions({
     queryKey: usersKeys.todos(userId),
     queryFn: ({ signal }) => getUserTodos(userId, signal),
+    staleTime: 2 * 60_000,
   });
 }
 
