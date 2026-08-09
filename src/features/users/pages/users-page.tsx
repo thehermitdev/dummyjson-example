@@ -4,16 +4,17 @@ import { Eye, Pencil, Plus, Search, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 
 import {
-  createUserInputSchema,
-  type CreateUserInput,
-  type User,
-  type UsersListResponse,
+  
+  
+  
+  createUserInputSchema
 } from "../api/contracts";
 import {
   addUserMutationOptions,
   deleteUserMutationOptions,
   updateUserMutationOptions,
 } from "../api/mutations";
+import type {CreateUserInput, User, UsersListResponse} from "../api/contracts";
 import type { UsersListInput } from "../api/queries";
 import { ConfirmDeleteDialog } from "#/shared/components/confirm-delete-dialog";
 import { DataPagination } from "#/shared/components/data-pagination";

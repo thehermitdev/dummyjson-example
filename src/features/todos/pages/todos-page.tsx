@@ -4,16 +4,17 @@ import { Eye, Pencil, Plus, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 
 import {
-  createTodoInputSchema,
-  type CreateTodoInput,
-  type Todo,
-  type TodosListResponse,
+  
+  
+  
+  createTodoInputSchema
 } from "../api/contracts";
 import {
   addTodoMutationOptions,
   deleteTodoMutationOptions,
   updateTodoMutationOptions,
 } from "../api/mutations";
+import type {CreateTodoInput, Todo, TodosListResponse} from "../api/contracts";
 import type { TodosListInput } from "../api/queries";
 import { ConfirmDeleteDialog } from "#/shared/components/confirm-delete-dialog";
 import { DataPagination } from "#/shared/components/data-pagination";
@@ -37,7 +38,7 @@ interface UserOption {
 interface TodosPageProps {
   data: TodosListResponse;
   input: TodosListInput;
-  users: UserOption[];
+  users: Array<UserOption>;
   onInputChange: (next: Partial<TodosListInput>) => void;
 }
 const emptyForm: CreateTodoInput = { todo: "", completed: false, userId: 1 };

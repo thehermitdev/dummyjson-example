@@ -2,8 +2,8 @@ import { useSuspenseQuery } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
 import { z } from "zod";
 
-import { TodosPage, todosListQueryOptions } from "#/features/todos";
 import type { TodosListInput } from "#/features/todos";
+import { TodosPage, todosListQueryOptions } from "#/features/todos";
 import { usersDirectoryQueryOptions } from "#/features/users";
 import { RouteErrorState, RoutePendingState } from "#/shared/components/route-state";
 

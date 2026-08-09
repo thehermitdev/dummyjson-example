@@ -2,8 +2,8 @@ import { useSuspenseQuery } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
 import { z } from "zod";
 
-import { CartsPage, cartsListQueryOptions } from "#/features/carts";
 import type { CartsListInput } from "#/features/carts";
+import { CartsPage, cartsListQueryOptions } from "#/features/carts";
 import { usersDirectoryQueryOptions } from "#/features/users";
 import { RouteErrorState, RoutePendingState } from "#/shared/components/route-state";
 

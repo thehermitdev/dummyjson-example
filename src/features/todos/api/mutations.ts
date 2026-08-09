@@ -1,9 +1,9 @@
 import { mutationOptions } from "@tanstack/react-query";
+import { addTodo, deleteTodo, updateTodo } from "./client";
+import { todosKeys } from "./queries";
 import type { QueryClient } from "@tanstack/react-query";
 
-import { addTodo, deleteTodo, updateTodo } from "./client";
 import type { CreateTodoInput, Todo, TodosListResponse, UpdateTodoInput } from "./contracts";
-import { todosKeys } from "./queries";
 
 function replaceTodo(queryClient: QueryClient, todo: Todo) {
   queryClient.setQueriesData<TodosListResponse>({ queryKey: todosKeys.lists() }, (current) =>

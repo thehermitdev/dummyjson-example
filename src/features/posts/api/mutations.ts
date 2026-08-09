@@ -1,9 +1,9 @@
 import { mutationOptions } from "@tanstack/react-query";
+import { addPost, deletePost, updatePost } from "./client";
+import { postsKeys } from "./queries";
 import type { QueryClient } from "@tanstack/react-query";
 
-import { addPost, deletePost, updatePost } from "./client";
 import type { CreatePostInput, Post, PostsListResponse, UpdatePostInput } from "./contracts";
-import { postsKeys } from "./queries";
 
 function replacePost(queryClient: QueryClient, post: Post) {
   queryClient.setQueriesData<PostsListResponse>({ queryKey: postsKeys.lists() }, (current) =>

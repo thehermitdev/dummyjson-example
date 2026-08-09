@@ -2,8 +2,8 @@ import { useSuspenseQuery } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
 import { z } from "zod";
 
-import { UsersPage, usersListQueryOptions } from "#/features/users";
 import type { UsersListInput } from "#/features/users";
+import { UsersPage, usersListQueryOptions } from "#/features/users";
 import { RouteErrorState, RoutePendingState } from "#/shared/components/route-state";
 
 const searchSchema = z.object({

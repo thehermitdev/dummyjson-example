@@ -6,7 +6,7 @@ export function PostDetailPage({
   author,
 }: {
   post: Post;
-  comments: PostComment[];
+  comments: Array<PostComment>;
   author: string;
 }) {
   return (

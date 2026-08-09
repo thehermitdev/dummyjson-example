@@ -1,5 +1,3 @@
-import type { ZodType } from "zod";
-
 import {
   createPostInputSchema,
   deletedPostSchema,
@@ -10,6 +8,8 @@ import {
   postsListResponseSchema,
   updatePostInputSchema,
 } from "./contracts";
+import type { ZodType } from "zod";
+
 import type {
   CreatePostInput,
   Post,
@@ -91,17 +91,17 @@ export async function getPost(postId: number, signal: AbortSignal): Promise<Post
   return parseResponse(postSchema, response.data, "Invalid post response");
 }
 
-export async function getPostTags(signal: AbortSignal): Promise<PostTag[]> {
+export async function getPostTags(signal: AbortSignal): Promise<Array<PostTag>> {
   const response = await httpClient.get("/posts/tags", { signal });
   return parseResponse(postTagsSchema, response.data, "Invalid post tags response");
 }
 
-export async function getPostTagList(signal: AbortSignal): Promise<string[]> {
+export async function getPostTagList(signal: AbortSignal): Promise<Array<string>> {
   const response = await httpClient.get("/posts/tag-list", { signal });
   return parseResponse(postTagListSchema, response.data, "Invalid post tag list response");
 }
 
-export async function getPostComments(postId: number, signal: AbortSignal): Promise<PostComment[]> {
+export async function getPostComments(postId: number, signal: AbortSignal): Promise<Array<PostComment>> {
   const response = await httpClient.get(`/posts/${postId}/comments`, { signal });
   return parseResponse(postCommentsResponseSchema, response.data, "Invalid post comments response")
     .comments;

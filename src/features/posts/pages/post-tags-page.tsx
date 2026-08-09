@@ -1,6 +1,6 @@
 import type { PostTag } from "../api/contracts";
 
-export function PostTagsPage({ tags, tagList }: { tags: PostTag[]; tagList: string[] }) {
+export function PostTagsPage({ tags, tagList }: { tags: Array<PostTag>; tagList: Array<string> }) {
   return (
     <div className="space-y-6">
       <div>

@@ -16,7 +16,7 @@ export function CartsPage({
 }: {
   data: CartsListResponse;
   input: CartsListInput;
-  users: UserOption[];
+  users: Array<UserOption>;
   onInputChange: (next: Partial<CartsListInput>) => void;
 }) {
   const userMap = new Map(users.map((user) => [user.id, `${user.firstName} ${user.lastName}`]));

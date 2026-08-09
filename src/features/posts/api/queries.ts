@@ -1,6 +1,6 @@
 import { queryOptions } from "@tanstack/react-query";
 
-import { getPost, getPostComments, getPosts, getPostTagList, getPostTags } from "./client";
+import { getPost, getPostComments, getPostTagList, getPostTags, getPosts } from "./client";
 import type { PostsListInput } from "./client";
 
 export const postsKeys = {

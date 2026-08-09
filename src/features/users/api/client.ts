@@ -1,5 +1,3 @@
-import type { ZodType } from "zod";
-
 import {
   createUserInputSchema,
   deletedUserSchema,
@@ -11,6 +9,8 @@ import {
   usersDirectoryResponseSchema,
   usersListResponseSchema,
 } from "./contracts";
+import type { ZodType } from "zod";
+
 import type {
   CreateUserInput,
   UpdateUserInput,

@@ -2,8 +2,8 @@ import { useSuspenseQuery } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
 import { z } from "zod";
 
-import { PostsPage, postTagListQueryOptions, postsListQueryOptions } from "#/features/posts";
 import type { PostsListInput } from "#/features/posts";
+import { PostsPage, postTagListQueryOptions, postsListQueryOptions } from "#/features/posts";
 import { usersDirectoryQueryOptions } from "#/features/users";
 import { RouteErrorState, RoutePendingState } from "#/shared/components/route-state";
 

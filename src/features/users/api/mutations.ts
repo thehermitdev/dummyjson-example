@@ -1,9 +1,9 @@
 import { mutationOptions } from "@tanstack/react-query";
+import { addUser, deleteUser, updateUser } from "./client";
+import { usersKeys } from "./queries";
 import type { QueryClient } from "@tanstack/react-query";
 
-import { addUser, deleteUser, updateUser } from "./client";
 import type { CreateUserInput, UpdateUserInput, User, UsersListResponse } from "./contracts";
-import { usersKeys } from "./queries";
 
 function replaceInLists(queryClient: QueryClient, user: User) {
   queryClient.setQueriesData<UsersListResponse>({ queryKey: usersKeys.lists() }, (current) =>

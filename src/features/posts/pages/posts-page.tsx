@@ -4,16 +4,17 @@ import { Eye, Pencil, Plus, Search, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 
 import {
-  createPostInputSchema,
-  type CreatePostInput,
-  type Post,
-  type PostsListResponse,
+  
+  
+  
+  createPostInputSchema
 } from "../api/contracts";
 import {
   addPostMutationOptions,
   deletePostMutationOptions,
   updatePostMutationOptions,
 } from "../api/mutations";
+import type {CreatePostInput, Post, PostsListResponse} from "../api/contracts";
 import type { PostsListInput } from "../api/queries";
 import { ConfirmDeleteDialog } from "#/shared/components/confirm-delete-dialog";
 import { DataPagination } from "#/shared/components/data-pagination";
@@ -38,8 +39,8 @@ interface UserOption {
 interface PostsPageProps {
   data: PostsListResponse;
   input: PostsListInput;
-  tags: string[];
-  users: UserOption[];
+  tags: Array<string>;
+  users: Array<UserOption>;
   onInputChange: (next: Partial<PostsListInput>) => void;
 }
 
