@@ -1,4 +1,4 @@
-import type { z } from "zod";
+import type { ZodType } from "zod";
 
 import {
   createUserInputSchema,
@@ -28,14 +28,14 @@ export interface UsersListInput {
   page: number;
   pageSize: number;
   q?: string | undefined;
-  filterKey?: string | undefined;
+  filterKey?: "hair.color" | "role" | "gender" | undefined;
   filterValue?: string | undefined;
-  sortBy?: string | undefined;
+  sortBy?: "firstName" | "lastName" | "age" | "email" | undefined;
   order?: "asc" | "desc" | undefined;
   select?: string | undefined;
 }
 
-function parseResponse<T>(schema: z.ZodType<T>, data: unknown, message: string): T {
+function parseResponse<T>(schema: ZodType<T>, data: unknown, message: string): T {
   const result = schema.safeParse(data);
   if (!result.success) {
     throw new ApplicationError(message, {
@@ -47,7 +47,7 @@ function parseResponse<T>(schema: z.ZodType<T>, data: unknown, message: string):
   return result.data;
 }
 
-export async function getUsers(input: UsersListInput, signal?: AbortSignal): Promise<UsersListResponse> {
+export async function getUsers(input: UsersListInput, signal: AbortSignal): Promise<UsersListResponse> {
   const skip = (input.page - 1) * input.pageSize;
   const common = {
     limit: input.pageSize,
@@ -65,11 +65,7 @@ export async function getUsers(input: UsersListInput, signal?: AbortSignal): Pro
 
   if (input.filterKey && input.filterValue) {
     const response = await httpClient.get("/users/filter", {
-      params: {
-        ...common,
-        key: input.filterKey,
-        value: input.filterValue,
-      },
+      params: { ...common, key: input.filterKey, value: input.filterValue },
       signal,
     });
     return parseResponse(usersListResponseSchema, response.data, "Invalid users filter response");
@@ -78,45 +74,50 @@ export async function getUsers(input: UsersListInput, signal?: AbortSignal): Pro
   const response = await httpClient.get("/users", {
     params: {
       ...common,
-      ...(input.sortBy ? { sortBy: input.sortBy } : {}),
-      ...(input.sortBy ? { order: input.order ?? "asc" } : {}),
+      ...(input.sortBy ? { sortBy: input.sortBy, order: input.order ?? "asc" } : {}),
     },
     signal,
   });
   return parseResponse(usersListResponseSchema, response.data, "Invalid users response");
 }
 
-export async function getUser(userId: number, signal?: AbortSignal): Promise<User> {
+export async function getUser(userId: number, signal: AbortSignal): Promise<User> {
   const response = await httpClient.get(`/users/${userId}`, { signal });
   return parseResponse(userSchema, response.data, "Invalid user response");
 }
 
-export async function getUsersDirectory(signal?: AbortSignal): Promise<UsersDirectoryResponse> {
+export async function getUsersDirectory(signal: AbortSignal): Promise<UsersDirectoryResponse> {
   const response = await httpClient.get("/users", {
     params: { limit: 0, select: "id,firstName,lastName,email,image" },
     signal,
   });
-  return parseResponse(usersDirectoryResponseSchema, response.data, "Invalid users directory response");
+  return parseResponse(
+    usersDirectoryResponseSchema,
+    response.data,
+    "Invalid users directory response",
+  );
 }
 
-export async function getUserPosts(userId: number, signal?: AbortSignal): Promise<UserPostsResponse> {
+export async function getUserPosts(userId: number, signal: AbortSignal): Promise<UserPostsResponse> {
   const response = await httpClient.get(`/users/${userId}/posts`, { signal });
   return parseResponse(userPostsResponseSchema, response.data, "Invalid user posts response");
 }
 
-export async function getUserCarts(userId: number, signal?: AbortSignal): Promise<UserCartsResponse> {
+export async function getUserCarts(userId: number, signal: AbortSignal): Promise<UserCartsResponse> {
   const response = await httpClient.get(`/users/${userId}/carts`, { signal });
   return parseResponse(userCartsResponseSchema, response.data, "Invalid user carts response");
 }
 
-export async function getUserTodos(userId: number, signal?: AbortSignal): Promise<UserTodosResponse> {
+export async function getUserTodos(userId: number, signal: AbortSignal): Promise<UserTodosResponse> {
   const response = await httpClient.get(`/users/${userId}/todos`, { signal });
   return parseResponse(userTodosResponseSchema, response.data, "Invalid user todos response");
 }
 
 export async function addUser(input: CreateUserInput): Promise<User> {
   const parsed = createUserInputSchema.parse(input);
-  const username = `${parsed.firstName}.${parsed.lastName}`.toLowerCase().replace(/\s+/g, "");
+  const username = `${parsed.firstName}.${parsed.lastName}`
+    .toLowerCase()
+    .replace(/\s+/g, "");
   const payload = {
     ...parsed,
     username,
@@ -153,6 +154,10 @@ export async function updateUser(userId: number, input: UpdateUserInput): Promis
 
 export async function deleteUser(userId: number): Promise<User> {
   const response = await httpClient.delete(`/users/${userId}`);
-  const deleted = parseResponse(deletedUserSchema, response.data, "Invalid delete user response");
+  const deleted = parseResponse(
+    deletedUserSchema,
+    response.data,
+    "Invalid delete user response",
+  );
   return userSchema.parse(deleted);
 }

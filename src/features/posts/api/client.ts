@@ -1,4 +1,4 @@
-import type { z } from "zod";
+import type { ZodType } from "zod";
 
 import {
   createPostInputSchema,
@@ -27,12 +27,12 @@ export interface PostsListInput {
   q?: string | undefined;
   tag?: string | undefined;
   userId?: number | undefined;
-  sortBy?: string | undefined;
+  sortBy?: "title" | "views" | "userId" | undefined;
   order?: "asc" | "desc" | undefined;
   select?: string | undefined;
 }
 
-function parseResponse<T>(schema: z.ZodType<T>, data: unknown, message: string): T {
+function parseResponse<T>(schema: ZodType<T>, data: unknown, message: string): T {
   const result = schema.safeParse(data);
   if (!result.success) {
     throw new ApplicationError(message, {
@@ -44,7 +44,7 @@ function parseResponse<T>(schema: z.ZodType<T>, data: unknown, message: string):
   return result.data;
 }
 
-export async function getPosts(input: PostsListInput, signal?: AbortSignal): Promise<PostsListResponse> {
+export async function getPosts(input: PostsListInput, signal: AbortSignal): Promise<PostsListResponse> {
   const skip = (input.page - 1) * input.pageSize;
   const params = {
     limit: input.pageSize,
@@ -61,7 +61,10 @@ export async function getPosts(input: PostsListInput, signal?: AbortSignal): Pro
   }
 
   if (input.tag) {
-    const response = await httpClient.get(`/posts/tag/${encodeURIComponent(input.tag)}`, { params, signal });
+    const response = await httpClient.get(`/posts/tag/${encodeURIComponent(input.tag)}`, {
+      params,
+      signal,
+    });
     return parseResponse(postsListResponseSchema, response.data, "Invalid posts tag response");
   }
 
@@ -80,24 +83,28 @@ export async function getPosts(input: PostsListInput, signal?: AbortSignal): Pro
   return parseResponse(postsListResponseSchema, response.data, "Invalid posts response");
 }
 
-export async function getPost(postId: number, signal?: AbortSignal): Promise<Post> {
+export async function getPost(postId: number, signal: AbortSignal): Promise<Post> {
   const response = await httpClient.get(`/posts/${postId}`, { signal });
   return parseResponse(postSchema, response.data, "Invalid post response");
 }
 
-export async function getPostTags(signal?: AbortSignal): Promise<PostTag[]> {
+export async function getPostTags(signal: AbortSignal): Promise<PostTag[]> {
   const response = await httpClient.get("/posts/tags", { signal });
   return parseResponse(postTagsSchema, response.data, "Invalid post tags response");
 }
 
-export async function getPostTagList(signal?: AbortSignal): Promise<string[]> {
+export async function getPostTagList(signal: AbortSignal): Promise<string[]> {
   const response = await httpClient.get("/posts/tag-list", { signal });
   return parseResponse(postTagListSchema, response.data, "Invalid post tag list response");
 }
 
-export async function getPostComments(postId: number, signal?: AbortSignal): Promise<PostComment[]> {
+export async function getPostComments(postId: number, signal: AbortSignal): Promise<PostComment[]> {
   const response = await httpClient.get(`/posts/${postId}/comments`, { signal });
-  return parseResponse(postCommentsResponseSchema, response.data, "Invalid post comments response").comments;
+  return parseResponse(
+    postCommentsResponseSchema,
+    response.data,
+    "Invalid post comments response",
+  ).comments;
 }
 
 export async function addPost(input: CreatePostInput): Promise<Post> {

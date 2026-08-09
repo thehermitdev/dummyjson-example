@@ -89,13 +89,20 @@ export function AppSidebar() {
           <SidebarGroupLabel>{open ? "Modules" : ""}</SidebarGroupLabel>
           <SidebarMenu>
             {modules.map((module) => {
-              const active = module.items.some((item) => pathname === item.to || pathname.startsWith(`${item.to}/`));
+              const active = module.items.some(
+                (item) => pathname === item.to || pathname.startsWith(`${item.to}/`),
+              );
               const Icon = module.icon;
               return (
                 <SidebarMenuItem key={module.title}>
                   <button
                     type="button"
-                    onClick={() => setExpanded((value) => ({ ...value, [module.title]: !value[module.title] }))}
+                    onClick={() =>
+                      setExpanded((value) => ({
+                        ...value,
+                        [module.title]: !value[module.title],
+                      }))
+                    }
                     className={cn(
                       "flex h-9 w-full items-center gap-3 rounded-md px-2 text-left text-sm font-medium transition-colors hover:bg-sidebar-accent hover:text-sidebar-accent-foreground",
                       active && "bg-sidebar-accent text-sidebar-accent-foreground",
@@ -105,7 +112,14 @@ export function AppSidebar() {
                   >
                     <Icon className="size-4 shrink-0" />
                     {open ? <span className="min-w-0 flex-1 truncate">{module.title}</span> : null}
-                    {open ? <ChevronRight className={cn("size-4 transition-transform", expanded[module.title] && "rotate-90")} /> : null}
+                    {open ? (
+                      <ChevronRight
+                        className={cn(
+                          "size-4 transition-transform",
+                          expanded[module.title] && "rotate-90",
+                        )}
+                      />
+                    ) : null}
                   </button>
                   {open && expanded[module.title] ? (
                     <SidebarMenuSub>
@@ -116,7 +130,8 @@ export function AppSidebar() {
                             onClick={() => setOpenMobile(false)}
                             className={cn(
                               "block rounded-md px-2 py-1.5 text-sm text-sidebar-foreground/70 transition-colors hover:bg-sidebar-accent hover:text-sidebar-accent-foreground",
-                              (pathname === item.to || pathname.startsWith(`${item.to}/`)) && "bg-sidebar-accent font-medium text-sidebar-accent-foreground",
+                              (pathname === item.to || pathname.startsWith(`${item.to}/`)) &&
+                                "bg-sidebar-accent font-medium text-sidebar-accent-foreground",
                             )}
                           >
                             {item.label}
@@ -133,7 +148,7 @@ export function AppSidebar() {
       </SidebarContent>
 
       <SidebarFooter>
-        {open ? <ClerkProfile /> : <div className="flex justify-center"><ClerkProfile /></div>}
+        <ClerkProfile compact={!open} />
       </SidebarFooter>
     </Sidebar>
   );
