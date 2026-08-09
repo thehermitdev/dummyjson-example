@@ -1,5 +1,5 @@
-import type { ReactNode } from "react";
 import { CheckSquare2, FileText, ShoppingCart, UsersRound } from "lucide-react";
+import type { ReactNode } from "react";
 
 import { AppLink } from "#/shared/components/navigation/app-link";
 
@@ -14,8 +14,7 @@ interface DashboardPageProps {
   }>;
 }
 
-const moduleCardClassName =
-  "rounded-xl border bg-card p-5 shadow-xs transition hover:bg-muted/30";
+const moduleCardClassName = "rounded-xl border bg-card p-5 shadow-xs transition hover:bg-muted/30";
 
 export function DashboardPage({ totals, recentUsers }: DashboardPageProps) {
   return (
@@ -51,22 +50,14 @@ export function DashboardPage({ totals, recentUsers }: DashboardPageProps) {
             icon={<FileText className="size-4" />}
           />
         </AppLink>
-        <AppLink
-          to="/carts"
-          search={{ page: 1, pageSize: 10 }}
-          className={moduleCardClassName}
-        >
+        <AppLink to="/carts" search={{ page: 1, pageSize: 10 }} className={moduleCardClassName}>
           <ModuleCardContent
             label="Carts"
             value={totals.carts}
             icon={<ShoppingCart className="size-4" />}
           />
         </AppLink>
-        <AppLink
-          to="/todos"
-          search={{ page: 1, pageSize: 10 }}
-          className={moduleCardClassName}
-        >
+        <AppLink to="/todos" search={{ page: 1, pageSize: 10 }} className={moduleCardClassName}>
           <ModuleCardContent
             label="Tasks"
             value={totals.todos}
