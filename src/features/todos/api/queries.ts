@@ -1,4 +1,4 @@
-import { queryOptions } from "@tanstack/react-query";
+import { keepPreviousData, queryOptions } from "@tanstack/react-query";
 
 import { getTodo, getTodos } from "./client";
 import type { TodosListInput } from "./client";
@@ -16,12 +16,16 @@ export function todosListQueryOptions(input: TodosListInput) {
     queryKey: todosKeys.list(input),
     queryFn: ({ signal }) => getTodos(input, signal),
     staleTime: 60_000,
+    placeholderData: keepPreviousData,
   });
 }
+
 export function todoDetailQueryOptions(todoId: number) {
   return queryOptions({
     queryKey: todosKeys.detail(todoId),
     queryFn: ({ signal }) => getTodo(todoId, signal),
+    staleTime: 2 * 60_000,
   });
 }
+
 export type { TodosListInput } from "./client";
