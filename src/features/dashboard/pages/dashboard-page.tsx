@@ -13,14 +13,10 @@ interface DashboardPageProps {
   }>;
 }
 
-export function DashboardPage({ totals, recentUsers }: DashboardPageProps) {
-  const cards = [
-    { label: "Users", value: totals.users, to: "/users" as const, icon: UsersRound },
-    { label: "Posts", value: totals.posts, to: "/posts" as const, icon: FileText },
-    { label: "Carts", value: totals.carts, to: "/carts" as const, icon: ShoppingCart },
-    { label: "Tasks", value: totals.todos, to: "/todos" as const, icon: CheckSquare2 },
-  ];
+const moduleCardClassName =
+  "rounded-xl border bg-card p-5 shadow-xs transition hover:bg-muted/30";
 
+export function DashboardPage({ totals, recentUsers }: DashboardPageProps) {
   return (
     <div className="space-y-6">
       <div>
@@ -32,22 +28,34 @@ export function DashboardPage({ totals, recentUsers }: DashboardPageProps) {
       </div>
 
       <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-        {cards.map(({ label, value, to, icon: Icon }) => (
-          <AppLink
-            key={label}
-            to={to}
-            className="rounded-xl border bg-card p-5 shadow-xs transition hover:bg-muted/30"
-          >
-            <div className="flex items-center justify-between">
-              <p className="text-sm text-muted-foreground">{label}</p>
-              <Icon className="size-4 text-muted-foreground" />
-            </div>
-            <p className="mt-3 text-3xl font-semibold">{value.toLocaleString()}</p>
-            <p className="mt-2 text-xs text-muted-foreground">
-              Open {label.toLowerCase()} module →
-            </p>
-          </AppLink>
-        ))}
+        <AppLink
+          to="/users"
+          search={{ page: 1, pageSize: 10, order: "asc" }}
+          className={moduleCardClassName}
+        >
+          <ModuleCardContent label="Users" value={totals.users} icon={<UsersRound className="size-4" />} />
+        </AppLink>
+        <AppLink
+          to="/posts"
+          search={{ page: 1, pageSize: 10, order: "asc" }}
+          className={moduleCardClassName}
+        >
+          <ModuleCardContent label="Posts" value={totals.posts} icon={<FileText className="size-4" />} />
+        </AppLink>
+        <AppLink
+          to="/carts"
+          search={{ page: 1, pageSize: 10 }}
+          className={moduleCardClassName}
+        >
+          <ModuleCardContent label="Carts" value={totals.carts} icon={<ShoppingCart className="size-4" />} />
+        </AppLink>
+        <AppLink
+          to="/todos"
+          search={{ page: 1, pageSize: 10 }}
+          className={moduleCardClassName}
+        >
+          <ModuleCardContent label="Tasks" value={totals.todos} icon={<CheckSquare2 className="size-4" />} />
+        </AppLink>
       </div>
 
       <div className="grid gap-6 xl:grid-cols-[1.3fr_.7fr]">
@@ -88,18 +96,21 @@ export function DashboardPage({ totals, recentUsers }: DashboardPageProps) {
           <div className="mt-5 grid gap-2">
             <AppLink
               to="/users"
+              search={{ page: 1, pageSize: 10, order: "asc" }}
               className="rounded-lg border p-3 text-sm font-medium hover:bg-muted"
             >
               Manage users
             </AppLink>
             <AppLink
               to="/posts"
+              search={{ page: 1, pageSize: 10, order: "asc" }}
               className="rounded-lg border p-3 text-sm font-medium hover:bg-muted"
             >
               Review content
             </AppLink>
             <AppLink
               to="/todos"
+              search={{ page: 1, pageSize: 10 }}
               className="rounded-lg border p-3 text-sm font-medium hover:bg-muted"
             >
               Manage tasks
@@ -108,5 +119,26 @@ export function DashboardPage({ totals, recentUsers }: DashboardPageProps) {
         </section>
       </div>
     </div>
+  );
+}
+
+function ModuleCardContent({
+  label,
+  value,
+  icon,
+}: {
+  label: string;
+  value: number;
+  icon: React.ReactNode;
+}) {
+  return (
+    <>
+      <div className="flex items-center justify-between">
+        <p className="text-sm text-muted-foreground">{label}</p>
+        <span className="text-muted-foreground">{icon}</span>
+      </div>
+      <p className="mt-3 text-3xl font-semibold">{value.toLocaleString()}</p>
+      <p className="mt-2 text-xs text-muted-foreground">Open {label.toLowerCase()} module →</p>
+    </>
   );
 }
