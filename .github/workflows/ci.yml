@@ -4,20 +4,17 @@ on:
   pull_request:
     branches: [main]
   push:
-    branches:
-      - agent/navigation-cache-skeleton-refinement
+    branches: [main]
 
 permissions:
-  contents: write
+  contents: read
 
 jobs:
   quality:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout refinement branch
+      - name: Checkout
         uses: actions/checkout@v4
-        with:
-          ref: agent/navigation-cache-skeleton-refinement
 
       - name: Setup Bun
         uses: oven-sh/setup-bun@v2
@@ -27,25 +24,5 @@ jobs:
       - name: Install dependencies
         run: bun install
 
-      - name: Format sources
-        run: bun run format
-
-      - name: Commit formatting when needed
-        shell: bash
-        run: |
-          if ! git diff --quiet; then
-            git config user.name "github-actions[bot]"
-            git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-            git add -A
-            git commit -m "style: format refinement sources"
-            git push
-          fi
-
-      - name: Lint
-        run: bun run lint
-
-      - name: Typecheck
-        run: bun run typecheck
-
-      - name: Build
-        run: bun run build
+      - name: Run quality checks
+        run: bun run check
