@@ -7,6 +7,7 @@ import {
   clerkRouterReplace,
 } from "#/app/auth/clerk-navigation";
 import { queryClient } from "#/app/query-client/query-client";
+import { Toaster } from "#/shared/components/ui/sonner";
 import { env } from "#/shared/config/env";
 import { ThemeProvider } from "#/shared/theme/theme-provider";
 
@@ -14,7 +15,7 @@ export function AppProviders({ children }: PropsWithChildren) {
   return (
     <ThemeProvider
       defaultTheme="system"
-      storageKey="tanstack-router-clerk-boilerplate-theme"
+      storageKey="dummyjson-admin-example-theme"
     >
       <ClerkProvider
         publishableKey={env.VITE_CLERK_PUBLISHABLE_KEY}
@@ -24,7 +25,10 @@ export function AppProviders({ children }: PropsWithChildren) {
         signInFallbackRedirectUrl="/dashboard"
         signUpFallbackRedirectUrl="/dashboard"
       >
-        <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
+        <QueryClientProvider client={queryClient}>
+          {children}
+          <Toaster position="top-right" />
+        </QueryClientProvider>
       </ClerkProvider>
     </ThemeProvider>
   );
