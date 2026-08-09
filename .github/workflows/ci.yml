@@ -25,20 +25,91 @@ jobs:
       - name: Install dependencies
         run: bun install
 
+      - name: Apply targeted type-contract fixes
+        shell: bash
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+
+          def replace(path: str, old: str, new: str) -> None:
+              file = Path(path)
+              text = file.read_text()
+              if old not in text:
+                  raise SystemExit(f"Expected text not found in {path}: {old[:80]!r}")
+              file.write_text(text.replace(old, new))
+
+          replace(
+              "src/app/auth/clerk-profile.tsx",
+              '<UserButton showName={!compact} afterSignOutUrl="/" />',
+              '<UserButton showName={!compact} />',
+          )
+
+          replace(
+              "src/features/users/pages/users-page.tsx",
+              'filterKey: event.target.value || undefined,',
+              'filterKey: (event.target.value || undefined) as UsersListInput["filterKey"],',
+          )
+          replace(
+              "src/features/users/pages/users-page.tsx",
+              'sortBy: event.target.value || undefined,',
+              'sortBy: (event.target.value || undefined) as UsersListInput["sortBy"],',
+          )
+
+          replace(
+              "src/routes/(protected)/_admin/users/index.tsx",
+              '''  const onInputChange = (next: Partial<UsersListInput>) => {
+            void navigate({ search: (previous) => ({ ...previous, ...next }) });
+          };''',
+              '''  const onInputChange = (next: Partial<UsersListInput>) => {
+            void navigate({
+              search: (previous) => ({
+                ...previous,
+                ...(next.page !== undefined ? { page: next.page } : {}),
+                ...(next.pageSize !== undefined ? { pageSize: next.pageSize } : {}),
+                ...("q" in next ? { q: next.q } : {}),
+                ...("filterKey" in next ? { filterKey: next.filterKey } : {}),
+                ...("filterValue" in next ? { filterValue: next.filterValue } : {}),
+                ...("sortBy" in next ? { sortBy: next.sortBy } : {}),
+                ...(next.order !== undefined ? { order: next.order } : {}),
+              }),
+            });
+          };''',
+          )
+
+          replace(
+              "src/routes/(protected)/_admin/posts/index.tsx",
+              '''  const onInputChange = (next: Partial<PostsListInput>) =>
+            void navigate({ search: (previous) => ({ ...previous, ...next }) });''',
+              '''  const onInputChange = (next: Partial<PostsListInput>) =>
+            void navigate({
+              search: (previous) => ({
+                ...previous,
+                ...(next.page !== undefined ? { page: next.page } : {}),
+                ...(next.pageSize !== undefined ? { pageSize: next.pageSize } : {}),
+                ...("q" in next ? { q: next.q } : {}),
+                ...("tag" in next ? { tag: next.tag } : {}),
+                ...("userId" in next ? { userId: next.userId } : {}),
+                ...("sortBy" in next ? { sortBy: next.sortBy } : {}),
+                ...(next.order !== undefined ? { order: next.order } : {}),
+              }),
+            });''',
+          )
+          PY
+
       - name: Format sources
         run: bun run format
 
       - name: Fix lintable issues
         run: bun run lint:fix
 
-      - name: Commit automated style fixes when needed
+      - name: Commit fixes when needed
         shell: bash
         run: |
           if ! git diff --quiet; then
             git config user.name "github-actions[bot]"
             git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
             git add -A
-            git commit -m "style: apply lint fixes"
+            git commit -m "fix: align TypeScript contracts"
             git push
           fi
 
