@@ -1,21 +1,20 @@
 name: CI
 
 on:
+  pull_request:
+    branches: [main]
   push:
-    branches:
-      - agent/zero-to-production-roadmap
+    branches: [main]
 
 permissions:
-  contents: write
+  contents: read
 
 jobs:
   quality:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout roadmap branch
+      - name: Checkout
         uses: actions/checkout@v4
-        with:
-          ref: agent/zero-to-production-roadmap
 
       - name: Setup Bun
         uses: oven-sh/setup-bun@v2
@@ -24,21 +23,6 @@ jobs:
 
       - name: Install dependencies
         run: bun install
-
-      - name: Format roadmap docs
-        run: bunx prettier --write docs/00.project-init.md docs/01.users.md docs/02.posts.md docs/03.carts.md docs/04.todos.md docs/05.dashboard.md
-
-      - name: Commit formatted docs when needed
-        shell: bash
-        run: |
-          if ! git diff --quiet -- docs; then
-            git config user.name "github-actions[bot]"
-            git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-            git add docs
-            git commit -m "style: format roadmap docs"
-            git pull --rebase origin agent/zero-to-production-roadmap
-            git push origin HEAD:agent/zero-to-production-roadmap
-          fi
 
       - name: Run quality checks
         run: bun run check
