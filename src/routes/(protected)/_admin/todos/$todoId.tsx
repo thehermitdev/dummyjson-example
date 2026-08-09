@@ -3,7 +3,8 @@ import { createFileRoute } from "@tanstack/react-router";
 
 import { TodoDetailPage, todoDetailQueryOptions } from "#/features/todos";
 import { usersDirectoryQueryOptions } from "#/features/users";
-import { RouteErrorState, RoutePendingState } from "#/shared/components/route-state";
+import { DetailPageSkeleton } from "#/shared/components/api-skeletons";
+import { RouteErrorState } from "#/shared/components/route-state";
 import { parseNumericId } from "#/shared/lib/route-params";
 
 export const Route = createFileRoute("/(protected)/_admin/todos/$todoId")({
@@ -14,10 +15,11 @@ export const Route = createFileRoute("/(protected)/_admin/todos/$todoId")({
       context.queryClient.ensureQueryData(usersDirectoryQueryOptions()),
     ]);
   },
-  pendingComponent: () => <RoutePendingState label="Loading task…" />,
+  pendingComponent: DetailPageSkeleton,
   errorComponent: ({ error, reset }) => <RouteErrorState error={error} reset={reset} />,
   component: TodoRoute,
 });
+
 function TodoRoute() {
   const { todoId: value } = Route.useParams();
   const todoId = parseNumericId(value, "task id");
