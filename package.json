@@ -48,7 +48,7 @@
     "@tanstack/eslint-config": "latest",
     "@tanstack/eslint-plugin-query": "^5.101.4",
     "@tanstack/router-cli": "1.167.21",
-    "@tanstack/router-plugin": "latest",
+    "@tanstack/router-plugin": "1.168.23",
     "@types/node": "^22.10.2",
     "@types/react": "^19.2.0",
     "@types/react-dom": "^19.2.0",
