@@ -3,19 +3,18 @@ name: CI
 on:
   pull_request:
     branches: [main]
+  push:
+    branches: [main]
 
 permissions:
-  contents: write
+  contents: read
 
 jobs:
   quality:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout PR branch
+      - name: Checkout
         uses: actions/checkout@v4
-        with:
-          ref: ${{ github.event.pull_request.head.ref }}
-          repository: ${{ github.event.pull_request.head.repo.full_name }}
 
       - name: Setup Bun
         uses: oven-sh/setup-bun@v2
@@ -25,105 +24,5 @@ jobs:
       - name: Install dependencies
         run: bun install
 
-      - name: Apply targeted type-contract fixes
-        shell: bash
-        run: |
-          python - <<'PY'
-          from pathlib import Path
-          import re
-
-          def replace(path: str, old: str, new: str) -> None:
-              file = Path(path)
-              text = file.read_text()
-              if old not in text:
-                  raise SystemExit(f"Expected text not found in {path}: {old!r}")
-              file.write_text(text.replace(old, new))
-
-          def regex_replace(path: str, pattern: str, replacement: str) -> None:
-              file = Path(path)
-              text = file.read_text()
-              updated, count = re.subn(pattern, replacement, text, flags=re.MULTILINE)
-              if count != 1:
-                  raise SystemExit(f"Expected exactly one regex match in {path}, got {count}")
-              file.write_text(updated)
-
-          replace(
-              "src/app/auth/clerk-profile.tsx",
-              '<UserButton showName={!compact} afterSignOutUrl="/" />',
-              '<UserButton showName={!compact} />',
-          )
-
-          replace(
-              "src/features/users/pages/users-page.tsx",
-              'filterKey: event.target.value || undefined,',
-              'filterKey: (event.target.value || undefined) as UsersListInput["filterKey"],',
-          )
-          replace(
-              "src/features/users/pages/users-page.tsx",
-              'sortBy: event.target.value || undefined,',
-              'sortBy: (event.target.value || undefined) as UsersListInput["sortBy"],',
-          )
-
-          regex_replace(
-              "src/routes/(protected)/_admin/users/index.tsx",
-              r'''  const onInputChange = \(next: Partial<UsersListInput>\) => \{\n\s*void navigate\(\{ search: \(previous\) => \(\{ \.\.\.previous, \.\.\.next \}\) \}\);\n\s*\};''',
-              '''  const onInputChange = (next: Partial<UsersListInput>) => {
-            void navigate({
-              search: (previous) => ({
-                ...previous,
-                ...(next.page !== undefined ? { page: next.page } : {}),
-                ...(next.pageSize !== undefined ? { pageSize: next.pageSize } : {}),
-                ...(\"q\" in next ? { q: next.q } : {}),
-                ...(\"filterKey\" in next ? { filterKey: next.filterKey } : {}),
-                ...(\"filterValue\" in next ? { filterValue: next.filterValue } : {}),
-                ...(\"sortBy\" in next ? { sortBy: next.sortBy } : {}),
-                ...(next.order !== undefined ? { order: next.order } : {}),
-              }),
-            });
-          };''',
-          )
-
-          regex_replace(
-              "src/routes/(protected)/_admin/posts/index.tsx",
-              r'''  const onInputChange = \(next: Partial<PostsListInput>\) =>\n\s*void navigate\(\{ search: \(previous\) => \(\{ \.\.\.previous, \.\.\.next \}\) \}\);''',
-              '''  const onInputChange = (next: Partial<PostsListInput>) =>
-            void navigate({
-              search: (previous) => ({
-                ...previous,
-                ...(next.page !== undefined ? { page: next.page } : {}),
-                ...(next.pageSize !== undefined ? { pageSize: next.pageSize } : {}),
-                ...(\"q\" in next ? { q: next.q } : {}),
-                ...(\"tag\" in next ? { tag: next.tag } : {}),
-                ...(\"userId\" in next ? { userId: next.userId } : {}),
-                ...(\"sortBy\" in next ? { sortBy: next.sortBy } : {}),
-                ...(next.order !== undefined ? { order: next.order } : {}),
-              }),
-            });''',
-          )
-          PY
-
-      - name: Format sources
-        run: bun run format
-
-      - name: Fix lintable issues
-        run: bun run lint:fix
-
-      - name: Commit fixes when needed
-        shell: bash
-        run: |
-          if ! git diff --quiet; then
-            git config user.name "github-actions[bot]"
-            git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-            git add -A
-            git commit -m "fix: align TypeScript contracts"
-            git push
-          fi
-
-      - name: Lint
-        run: bun run lint
-
-      - name: Typecheck
-        run: bun run typecheck
-
-      - name: Build
-        run: bun run build
+      - name: Run quality checks
+        run: bun run check
