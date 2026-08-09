@@ -1,19 +1,21 @@
 import type React from "react";
 
 import type { UserCartsResponse, UserPostsResponse, UserTodosResponse } from "../api/contracts";
+import { AppLink } from "#/shared/components/navigation/app-link";
 
 export function UserPostsPanel({ data }: { data: UserPostsResponse }) {
   return (
     <RelationCard title="Posts" count={data.total}>
       {data.posts.map((post) => (
-        <a
+        <AppLink
           key={post.id}
-          href={`/posts/${post.id}`}
+          to="/posts/$postId"
+          params={{ postId: String(post.id) }}
           className="block rounded-lg border p-4 transition hover:bg-muted/40"
         >
           <p className="font-medium">{post.title}</p>
           <p className="mt-1 line-clamp-2 text-sm text-muted-foreground">{post.body}</p>
-        </a>
+        </AppLink>
       ))}
     </RelationCard>
   );
@@ -23,9 +25,10 @@ export function UserCartsPanel({ data }: { data: UserCartsResponse }) {
   return (
     <RelationCard title="Carts" count={data.total}>
       {data.carts.map((cart) => (
-        <a
+        <AppLink
           key={cart.id}
-          href={`/carts/${cart.id}`}
+          to="/carts/$cartId"
+          params={{ cartId: String(cart.id) }}
           className="flex items-center justify-between rounded-lg border p-4 transition hover:bg-muted/40"
         >
           <div>
@@ -35,7 +38,7 @@ export function UserCartsPanel({ data }: { data: UserCartsResponse }) {
             </p>
           </div>
           <p className="font-medium">${cart.discountedTotal.toLocaleString()}</p>
-        </a>
+        </AppLink>
       ))}
     </RelationCard>
   );
@@ -45,16 +48,17 @@ export function UserTodosPanel({ data }: { data: UserTodosResponse }) {
   return (
     <RelationCard title="Tasks" count={data.total}>
       {data.todos.map((todo) => (
-        <a
+        <AppLink
           key={todo.id}
-          href={`/todos/${todo.id}`}
+          to="/todos/$todoId"
+          params={{ todoId: String(todo.id) }}
           className="flex items-center justify-between gap-4 rounded-lg border p-4 transition hover:bg-muted/40"
         >
           <p className="font-medium">{todo.todo}</p>
           <span className="rounded-full bg-muted px-2 py-1 text-xs">
             {todo.completed ? "Completed" : "Open"}
           </span>
-        </a>
+        </AppLink>
       ))}
     </RelationCard>
   );
