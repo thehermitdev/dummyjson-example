@@ -66,12 +66,7 @@ function formFromUser(user: User): CreateUserInput {
   };
 }
 
-export function UsersPage({
-  data,
-  input,
-  isFetching = false,
-  onInputChange,
-}: UsersPageProps) {
+export function UsersPage({ data, input, isFetching = false, onInputChange }: UsersPageProps) {
   const queryClient = useQueryClient();
   const addMutation = useMutation(addUserMutationOptions(queryClient));
   const updateMutation = useMutation(updateUserMutationOptions(queryClient));

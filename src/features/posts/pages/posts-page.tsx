@@ -342,7 +342,9 @@ export function PostsPage({
             <DrawerHeader>
               <DrawerTitle>{editing ? "Update post" : "Add post"}</DrawerTitle>
               <DrawerDescription>
-                {editing ? "Update the simulated post." : "Create a simulated post through /posts/add."}
+                {editing
+                  ? "Update the simulated post."
+                  : "Create a simulated post through /posts/add."}
               </DrawerDescription>
             </DrawerHeader>
             <DrawerBody>
@@ -425,7 +427,11 @@ export function PostsPage({
           if (!open) setDeleting(null);
         }}
         title="Delete post?"
-        description={deleting ? `Delete “${deleting.title}” from the current demo session?` : "Delete this post?"}
+        description={
+          deleting
+            ? `Delete “${deleting.title}” from the current demo session?`
+            : "Delete this post?"
+        }
         pending={deleteMutation.isPending}
         onConfirm={() => void confirmDelete()}
       />

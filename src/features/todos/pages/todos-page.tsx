@@ -300,7 +300,11 @@ export function TodosPage({
           if (!open) setDeleting(null);
         }}
         title="Delete task?"
-        description={deleting ? `Delete “${deleting.todo}” from the current demo session?` : "Delete this task?"}
+        description={
+          deleting
+            ? `Delete “${deleting.todo}” from the current demo session?`
+            : "Delete this task?"
+        }
         pending={deleteMutation.isPending}
         onConfirm={() => void confirmDelete()}
       />

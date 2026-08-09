@@ -86,13 +86,22 @@ export function DashboardPage({ totals, recentUsers }: DashboardPageProps) {
             relationships.
           </p>
           <div className="mt-5 grid gap-2">
-            <AppLink to="/users" className="rounded-lg border p-3 text-sm font-medium hover:bg-muted">
+            <AppLink
+              to="/users"
+              className="rounded-lg border p-3 text-sm font-medium hover:bg-muted"
+            >
               Manage users
             </AppLink>
-            <AppLink to="/posts" className="rounded-lg border p-3 text-sm font-medium hover:bg-muted">
+            <AppLink
+              to="/posts"
+              className="rounded-lg border p-3 text-sm font-medium hover:bg-muted"
+            >
               Review content
             </AppLink>
-            <AppLink to="/todos" className="rounded-lg border p-3 text-sm font-medium hover:bg-muted">
+            <AppLink
+              to="/todos"
+              className="rounded-lg border p-3 text-sm font-medium hover:bg-muted"
+            >
               Manage tasks
             </AppLink>
           </div>

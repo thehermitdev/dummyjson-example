@@ -43,10 +43,7 @@ export function AppBreadcrumb() {
                 {current ? (
                   <BreadcrumbPage>{labelFor(segment)}</BreadcrumbPage>
                 ) : (
-                  <AppLink
-                    to={to as never}
-                    className="transition-colors hover:text-foreground"
-                  >
+                  <AppLink to={to as never} className="transition-colors hover:text-foreground">
                     {labelFor(segment)}
                   </AppLink>
                 )}

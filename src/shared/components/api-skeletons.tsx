@@ -74,7 +74,11 @@ export function DetailPageSkeleton() {
 
 export function RelationPanelSkeleton() {
   return (
-    <section className="rounded-xl border bg-card shadow-xs" role="status" aria-label="Loading related data">
+    <section
+      className="rounded-xl border bg-card shadow-xs"
+      role="status"
+      aria-label="Loading related data"
+    >
       <div className="flex items-center justify-between border-b p-5">
         <Skeleton className="h-6 w-28" />
         <Skeleton className="h-4 w-20" />
@@ -119,7 +123,11 @@ export function TagsPageSkeleton() {
 
 export function PostDetailSkeleton() {
   return (
-    <div className="grid gap-6 xl:grid-cols-[minmax(0,1fr)_360px]" role="status" aria-label="Loading post">
+    <div
+      className="grid gap-6 xl:grid-cols-[minmax(0,1fr)_360px]"
+      role="status"
+      aria-label="Loading post"
+    >
       <article className="rounded-xl border bg-card p-6 shadow-xs">
         <Skeleton className="h-4 w-24" />
         <Skeleton className="mt-3 h-9 w-4/5" />
@@ -160,7 +168,10 @@ export function DashboardPageSkeleton() {
       <PageHeadingSkeleton />
       <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
         {Array.from({ length: 4 }, (_, index) => (
-          <div key={`metric-${index}`} className="space-y-4 rounded-xl border bg-card p-5 shadow-xs">
+          <div
+            key={`metric-${index}`}
+            className="space-y-4 rounded-xl border bg-card p-5 shadow-xs"
+          >
             <Skeleton className="h-4 w-24" />
             <Skeleton className="h-9 w-20" />
             <Skeleton className="h-3 w-32" />
