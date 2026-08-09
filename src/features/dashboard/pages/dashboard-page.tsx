@@ -1,3 +1,4 @@
+import type { ReactNode } from "react";
 import { CheckSquare2, FileText, ShoppingCart, UsersRound } from "lucide-react";
 
 import { AppLink } from "#/shared/components/navigation/app-link";
@@ -33,28 +34,44 @@ export function DashboardPage({ totals, recentUsers }: DashboardPageProps) {
           search={{ page: 1, pageSize: 10, order: "asc" }}
           className={moduleCardClassName}
         >
-          <ModuleCardContent label="Users" value={totals.users} icon={<UsersRound className="size-4" />} />
+          <ModuleCardContent
+            label="Users"
+            value={totals.users}
+            icon={<UsersRound className="size-4" />}
+          />
         </AppLink>
         <AppLink
           to="/posts"
           search={{ page: 1, pageSize: 10, order: "asc" }}
           className={moduleCardClassName}
         >
-          <ModuleCardContent label="Posts" value={totals.posts} icon={<FileText className="size-4" />} />
+          <ModuleCardContent
+            label="Posts"
+            value={totals.posts}
+            icon={<FileText className="size-4" />}
+          />
         </AppLink>
         <AppLink
           to="/carts"
           search={{ page: 1, pageSize: 10 }}
           className={moduleCardClassName}
         >
-          <ModuleCardContent label="Carts" value={totals.carts} icon={<ShoppingCart className="size-4" />} />
+          <ModuleCardContent
+            label="Carts"
+            value={totals.carts}
+            icon={<ShoppingCart className="size-4" />}
+          />
         </AppLink>
         <AppLink
           to="/todos"
           search={{ page: 1, pageSize: 10 }}
           className={moduleCardClassName}
         >
-          <ModuleCardContent label="Tasks" value={totals.todos} icon={<CheckSquare2 className="size-4" />} />
+          <ModuleCardContent
+            label="Tasks"
+            value={totals.todos}
+            icon={<CheckSquare2 className="size-4" />}
+          />
         </AppLink>
       </div>
 
@@ -122,15 +139,7 @@ export function DashboardPage({ totals, recentUsers }: DashboardPageProps) {
   );
 }
 
-function ModuleCardContent({
-  label,
-  value,
-  icon,
-}: {
-  label: string;
-  value: number;
-  icon: React.ReactNode;
-}) {
+function ModuleCardContent({ label, value, icon }: { label: string; value: number; icon: ReactNode }) {
   return (
     <>
       <div className="flex items-center justify-between">
