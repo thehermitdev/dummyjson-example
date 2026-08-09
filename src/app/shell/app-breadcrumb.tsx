@@ -1,9 +1,9 @@
 import { useRouterState } from "@tanstack/react-router";
 
+import { AppLink } from "#/shared/components/navigation/app-link";
 import {
   Breadcrumb,
   BreadcrumbItem,
-  BreadcrumbLink,
   BreadcrumbList,
   BreadcrumbPage,
   BreadcrumbSeparator,
@@ -34,16 +34,21 @@ export function AppBreadcrumb() {
     <Breadcrumb>
       <BreadcrumbList>
         {segments.map((segment, index) => {
-          const href = `/${segments.slice(0, index + 1).join("/")}`;
+          const to = `/${segments.slice(0, index + 1).join("/")}`;
           const current = index === segments.length - 1;
           return (
-            <span className="contents" key={href}>
+            <span className="contents" key={to}>
               {index > 0 ? <BreadcrumbSeparator /> : null}
               <BreadcrumbItem>
                 {current ? (
                   <BreadcrumbPage>{labelFor(segment)}</BreadcrumbPage>
                 ) : (
-                  <BreadcrumbLink href={href}>{labelFor(segment)}</BreadcrumbLink>
+                  <AppLink
+                    to={to as never}
+                    className="transition-colors hover:text-foreground"
+                  >
+                    {labelFor(segment)}
+                  </AppLink>
                 )}
               </BreadcrumbItem>
             </span>
