@@ -1,5 +1,7 @@
 import { CheckSquare2, FileText, ShoppingCart, UsersRound } from "lucide-react";
 
+import { AppLink } from "#/shared/components/navigation/app-link";
+
 interface DashboardPageProps {
   totals: { users: number; posts: number; carts: number; todos: number };
   recentUsers: Array<{
@@ -13,11 +15,12 @@ interface DashboardPageProps {
 
 export function DashboardPage({ totals, recentUsers }: DashboardPageProps) {
   const cards = [
-    { label: "Users", value: totals.users, href: "/users", icon: UsersRound },
-    { label: "Posts", value: totals.posts, href: "/posts", icon: FileText },
-    { label: "Carts", value: totals.carts, href: "/carts", icon: ShoppingCart },
-    { label: "Tasks", value: totals.todos, href: "/todos", icon: CheckSquare2 },
+    { label: "Users", value: totals.users, to: "/users" as const, icon: UsersRound },
+    { label: "Posts", value: totals.posts, to: "/posts" as const, icon: FileText },
+    { label: "Carts", value: totals.carts, to: "/carts" as const, icon: ShoppingCart },
+    { label: "Tasks", value: totals.todos, to: "/todos" as const, icon: CheckSquare2 },
   ];
+
   return (
     <div className="space-y-6">
       <div>
@@ -27,11 +30,12 @@ export function DashboardPage({ totals, recentUsers }: DashboardPageProps) {
           A user-centered backoffice view across DummyJSON users, content, commerce, and tasks.
         </p>
       </div>
+
       <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-        {cards.map(({ label, value, href, icon: Icon }) => (
-          <a
+        {cards.map(({ label, value, to, icon: Icon }) => (
+          <AppLink
             key={label}
-            href={href}
+            to={to}
             className="rounded-xl border bg-card p-5 shadow-xs transition hover:bg-muted/30"
           >
             <div className="flex items-center justify-between">
@@ -42,9 +46,10 @@ export function DashboardPage({ totals, recentUsers }: DashboardPageProps) {
             <p className="mt-2 text-xs text-muted-foreground">
               Open {label.toLowerCase()} module →
             </p>
-          </a>
+          </AppLink>
         ))}
       </div>
+
       <div className="grid gap-6 xl:grid-cols-[1.3fr_.7fr]">
         <section className="rounded-xl border bg-card shadow-xs">
           <div className="border-b p-5">
@@ -55,9 +60,10 @@ export function DashboardPage({ totals, recentUsers }: DashboardPageProps) {
           </div>
           <div className="divide-y">
             {recentUsers.map((user) => (
-              <a
+              <AppLink
                 key={user.id}
-                href={`/users/${user.id}`}
+                to="/users/$userId"
+                params={{ userId: String(user.id) }}
                 className="flex items-center gap-3 p-4 hover:bg-muted/30"
               >
                 <img src={user.image} alt="" className="size-10 rounded-full border bg-muted" />
@@ -67,10 +73,11 @@ export function DashboardPage({ totals, recentUsers }: DashboardPageProps) {
                   </p>
                   <p className="truncate text-xs text-muted-foreground">{user.email}</p>
                 </div>
-              </a>
+              </AppLink>
             ))}
           </div>
         </section>
+
         <section className="rounded-xl border bg-card p-5 shadow-xs">
           <h2 className="font-semibold">Admin model</h2>
           <p className="mt-2 text-sm leading-6 text-muted-foreground">
@@ -79,15 +86,15 @@ export function DashboardPage({ totals, recentUsers }: DashboardPageProps) {
             relationships.
           </p>
           <div className="mt-5 grid gap-2">
-            <a href="/users" className="rounded-lg border p-3 text-sm font-medium hover:bg-muted">
+            <AppLink to="/users" className="rounded-lg border p-3 text-sm font-medium hover:bg-muted">
               Manage users
-            </a>
-            <a href="/posts" className="rounded-lg border p-3 text-sm font-medium hover:bg-muted">
+            </AppLink>
+            <AppLink to="/posts" className="rounded-lg border p-3 text-sm font-medium hover:bg-muted">
               Review content
-            </a>
-            <a href="/todos" className="rounded-lg border p-3 text-sm font-medium hover:bg-muted">
+            </AppLink>
+            <AppLink to="/todos" className="rounded-lg border p-3 text-sm font-medium hover:bg-muted">
               Manage tasks
-            </a>
+            </AppLink>
           </div>
         </section>
       </div>
