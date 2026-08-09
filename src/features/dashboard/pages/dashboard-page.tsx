@@ -139,7 +139,15 @@ export function DashboardPage({ totals, recentUsers }: DashboardPageProps) {
   );
 }
 
-function ModuleCardContent({ label, value, icon }: { label: string; value: number; icon: ReactNode }) {
+function ModuleCardContent({
+  label,
+  value,
+  icon,
+}: {
+  label: string;
+  value: number;
+  icon: ReactNode;
+}) {
   return (
     <>
       <div className="flex items-center justify-between">
