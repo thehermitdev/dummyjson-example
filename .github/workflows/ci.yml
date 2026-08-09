@@ -30,13 +30,22 @@ jobs:
         run: |
           python - <<'PY'
           from pathlib import Path
+          import re
 
           def replace(path: str, old: str, new: str) -> None:
               file = Path(path)
               text = file.read_text()
               if old not in text:
-                  raise SystemExit(f"Expected text not found in {path}: {old[:80]!r}")
+                  raise SystemExit(f"Expected text not found in {path}: {old!r}")
               file.write_text(text.replace(old, new))
+
+          def regex_replace(path: str, pattern: str, replacement: str) -> None:
+              file = Path(path)
+              text = file.read_text()
+              updated, count = re.subn(pattern, replacement, text, flags=re.MULTILINE)
+              if count != 1:
+                  raise SystemExit(f"Expected exactly one regex match in {path}, got {count}")
+              file.write_text(updated)
 
           replace(
               "src/app/auth/clerk-profile.tsx",
@@ -55,41 +64,38 @@ jobs:
               'sortBy: (event.target.value || undefined) as UsersListInput["sortBy"],',
           )
 
-          replace(
+          regex_replace(
               "src/routes/(protected)/_admin/users/index.tsx",
-              '''  const onInputChange = (next: Partial<UsersListInput>) => {
-            void navigate({ search: (previous) => ({ ...previous, ...next }) });
-          };''',
+              r'''  const onInputChange = \(next: Partial<UsersListInput>\) => \{\n\s*void navigate\(\{ search: \(previous\) => \(\{ \.\.\.previous, \.\.\.next \}\) \}\);\n\s*\};''',
               '''  const onInputChange = (next: Partial<UsersListInput>) => {
             void navigate({
               search: (previous) => ({
                 ...previous,
                 ...(next.page !== undefined ? { page: next.page } : {}),
                 ...(next.pageSize !== undefined ? { pageSize: next.pageSize } : {}),
-                ...("q" in next ? { q: next.q } : {}),
-                ...("filterKey" in next ? { filterKey: next.filterKey } : {}),
-                ...("filterValue" in next ? { filterValue: next.filterValue } : {}),
-                ...("sortBy" in next ? { sortBy: next.sortBy } : {}),
+                ...(\"q\" in next ? { q: next.q } : {}),
+                ...(\"filterKey\" in next ? { filterKey: next.filterKey } : {}),
+                ...(\"filterValue\" in next ? { filterValue: next.filterValue } : {}),
+                ...(\"sortBy\" in next ? { sortBy: next.sortBy } : {}),
                 ...(next.order !== undefined ? { order: next.order } : {}),
               }),
             });
           };''',
           )
 
-          replace(
+          regex_replace(
               "src/routes/(protected)/_admin/posts/index.tsx",
-              '''  const onInputChange = (next: Partial<PostsListInput>) =>
-            void navigate({ search: (previous) => ({ ...previous, ...next }) });''',
+              r'''  const onInputChange = \(next: Partial<PostsListInput>\) =>\n\s*void navigate\(\{ search: \(previous\) => \(\{ \.\.\.previous, \.\.\.next \}\) \}\);''',
               '''  const onInputChange = (next: Partial<PostsListInput>) =>
             void navigate({
               search: (previous) => ({
                 ...previous,
                 ...(next.page !== undefined ? { page: next.page } : {}),
                 ...(next.pageSize !== undefined ? { pageSize: next.pageSize } : {}),
-                ...("q" in next ? { q: next.q } : {}),
-                ...("tag" in next ? { tag: next.tag } : {}),
-                ...("userId" in next ? { userId: next.userId } : {}),
-                ...("sortBy" in next ? { sortBy: next.sortBy } : {}),
+                ...(\"q\" in next ? { q: next.q } : {}),
+                ...(\"tag\" in next ? { tag: next.tag } : {}),
+                ...(\"userId\" in next ? { userId: next.userId } : {}),
+                ...(\"sortBy\" in next ? { sortBy: next.sortBy } : {}),
                 ...(next.order !== undefined ? { order: next.order } : {}),
               }),
             });''',
