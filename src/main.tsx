@@ -5,6 +5,7 @@ import { AppProviders } from "#/app/providers/app-providers";
 import { AppRouterProvider } from "#/app/router/router-provider";
 
 import "#/styles/globals.css";
+import "#/styles/admin.css";
 
 const rootElement = document.getElementById("app");
 

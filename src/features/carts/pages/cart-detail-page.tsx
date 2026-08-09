@@ -1,0 +1,52 @@
+import type { Cart } from "../api/contracts";
+
+export function CartDetailPage({ cart, owner }: { cart: Cart; owner: string }) {
+  return (
+    <div className="space-y-6">
+      <div>
+        <p className="text-sm font-medium text-primary">Commerce</p>
+        <h1 className="mt-1 text-3xl font-semibold tracking-tight">Cart #{cart.id}</h1>
+        <p className="mt-2 text-sm text-muted-foreground">
+          Owned by {owner} · {cart.totalQuantity} items
+        </p>
+      </div>
+      <div className="grid gap-4 sm:grid-cols-3">
+        <Metric label="Products" value={String(cart.totalProducts)} />
+        <Metric label="Original total" value={`$${cart.total.toLocaleString()}`} />
+        <Metric label="Discounted total" value={`$${cart.discountedTotal.toLocaleString()}`} />
+      </div>
+      <div className="overflow-hidden rounded-xl border bg-card shadow-xs">
+        <div className="border-b p-5">
+          <h2 className="font-semibold">Products</h2>
+        </div>
+        <div className="divide-y">
+          {cart.products.map((product) => (
+            <div key={product.id} className="flex flex-col gap-3 p-4 sm:flex-row sm:items-center">
+              <img
+                src={product.thumbnail}
+                alt=""
+                className="size-14 rounded-lg border bg-muted object-cover"
+              />
+              <div className="min-w-0 flex-1">
+                <p className="font-medium">{product.title}</p>
+                <p className="text-sm text-muted-foreground">
+                  ${product.price.toLocaleString()} × {product.quantity}
+                </p>
+              </div>
+              <p className="font-medium">${product.total.toLocaleString()}</p>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function Metric({ label, value }: { label: string; value: string }) {
+  return (
+    <div className="rounded-xl border bg-card p-5 shadow-xs">
+      <p className="text-sm text-muted-foreground">{label}</p>
+      <p className="mt-2 text-2xl font-semibold">{value}</p>
+    </div>
+  );
+}

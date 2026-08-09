@@ -1,0 +1,29 @@
+import type { Todo } from "../api/contracts";
+
+export function TodoDetailPage({ todo, assignee }: { todo: Todo; assignee: string }) {
+  return (
+    <div className="mx-auto max-w-3xl rounded-xl border bg-card p-6 shadow-xs">
+      <div className="flex items-start justify-between gap-4">
+        <div>
+          <p className="text-sm font-medium text-primary">Task #{todo.id}</p>
+          <h1 className="mt-2 text-3xl font-semibold tracking-tight">{todo.todo}</h1>
+        </div>
+        <span
+          className={`shrink-0 rounded-full px-3 py-1 text-sm ${todo.completed ? "bg-emerald-500/10 text-emerald-700 dark:text-emerald-300" : "bg-amber-500/10 text-amber-700 dark:text-amber-300"}`}
+        >
+          {todo.completed ? "Completed" : "Open"}
+        </span>
+      </div>
+      <div className="mt-8 grid gap-4 border-t pt-5 sm:grid-cols-2">
+        <div>
+          <p className="text-xs uppercase tracking-wide text-muted-foreground">Assignee</p>
+          <p className="mt-1 font-medium">{assignee}</p>
+        </div>
+        <div>
+          <p className="text-xs uppercase tracking-wide text-muted-foreground">User ID</p>
+          <p className="mt-1 font-medium">#{todo.userId}</p>
+        </div>
+      </div>
+    </div>
+  );
+}

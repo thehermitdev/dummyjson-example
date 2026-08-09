@@ -1,10 +1,9 @@
 import { useEffect, useRef } from "react";
 import { RouterProvider } from "@tanstack/react-router";
 
+import { router } from "./router";
 import { useAppAuth } from "#/app/auth/clerk-auth";
 import { queryClient } from "#/app/query-client/query-client";
-
-import { router } from "./router";
 
 export function AppRouterProvider() {
   const auth = useAppAuth();
