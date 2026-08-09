@@ -1,11 +1,13 @@
-import { useSuspenseQuery } from "@tanstack/react-query";
+import { useCallback } from "react";
+import { useQuery } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
 import { z } from "zod";
 
 import type { CartsListInput } from "#/features/carts";
 import { CartsPage, cartsListQueryOptions } from "#/features/carts";
 import { usersDirectoryQueryOptions } from "#/features/users";
-import { RouteErrorState, RoutePendingState } from "#/shared/components/route-state";
+import { TablePageSkeleton } from "#/shared/components/api-skeletons";
+import { RouteErrorState } from "#/shared/components/route-state";
 
 const searchSchema = z.object({
   page: z.coerce.number().int().min(1).catch(1),
@@ -16,22 +18,41 @@ const searchSchema = z.object({
 export const Route = createFileRoute("/(protected)/_admin/carts/")({
   validateSearch: (search) => searchSchema.parse(search),
   loaderDeps: ({ search }) => search,
-  loader: ({ context, deps }) =>
-    Promise.all([
-      context.queryClient.ensureQueryData(cartsListQueryOptions(deps)),
-      context.queryClient.ensureQueryData(usersDirectoryQueryOptions()),
-    ]),
-  pendingComponent: () => <RoutePendingState label="Loading carts…" />,
+  loader: ({ context, deps }) => {
+    void context.queryClient.prefetchQuery(cartsListQueryOptions(deps));
+    void context.queryClient.prefetchQuery(usersDirectoryQueryOptions());
+  },
   errorComponent: ({ error, reset }) => <RouteErrorState error={error} reset={reset} />,
   head: () => ({ meta: [{ title: "Carts · DummyJSON Admin" }] }),
   component: CartsRoute,
 });
+
 function CartsRoute() {
   const search = Route.useSearch();
   const navigate = Route.useNavigate();
-  const carts = useSuspenseQuery(cartsListQueryOptions(search)).data;
-  const users = useSuspenseQuery(usersDirectoryQueryOptions()).data.users;
-  const onInputChange = (next: Partial<CartsListInput>) =>
-    void navigate({ search: (previous) => ({ ...previous, ...next }) });
-  return <CartsPage data={carts} input={search} users={users} onInputChange={onInputChange} />;
+  const cartsQuery = useQuery(cartsListQueryOptions(search));
+  const usersQuery = useQuery(usersDirectoryQueryOptions());
+
+  const onInputChange = useCallback(
+    (next: Partial<CartsListInput>) => {
+      void navigate({ search: (previous) => ({ ...previous, ...next }) });
+    },
+    [navigate],
+  );
+
+  const error = cartsQuery.error ?? usersQuery.error;
+  if (!cartsQuery.data || !usersQuery.data) {
+    if (error) throw error;
+    return <TablePageSkeleton columns={5} />;
+  }
+
+  return (
+    <CartsPage
+      data={cartsQuery.data}
+      input={search}
+      users={usersQuery.data.users}
+      isFetching={cartsQuery.isFetching || usersQuery.isFetching}
+      onInputChange={onInputChange}
+    />
+  );
 }
