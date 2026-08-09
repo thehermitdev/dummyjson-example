@@ -1,4 +1,5 @@
 import type { Post, PostComment } from "../api/contracts";
+import { AppLink } from "#/shared/components/navigation/app-link";
 
 export function PostDetailPage({
   post,
@@ -20,13 +21,14 @@ export function PostDetailPage({
         </p>
         <div className="mt-4 flex flex-wrap gap-2">
           {post.tags.map((tag) => (
-            <a
+            <AppLink
               key={tag}
-              href={`/posts?tag=${encodeURIComponent(tag)}`}
+              to="/posts"
+              search={{ page: 1, pageSize: 10, tag, order: "asc" }}
               className="rounded-full bg-muted px-2.5 py-1 text-xs hover:bg-muted/70"
             >
               {tag}
-            </a>
+            </AppLink>
           ))}
         </div>
         <p className="mt-8 whitespace-pre-wrap leading-7 text-foreground/90">{post.body}</p>
