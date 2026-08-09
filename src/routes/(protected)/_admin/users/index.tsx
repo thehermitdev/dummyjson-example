@@ -32,7 +32,18 @@ function UsersRoute() {
   const { data } = useSuspenseQuery(usersListQueryOptions(search));
 
   const onInputChange = (next: Partial<UsersListInput>) => {
-    void navigate({ search: (previous) => ({ ...previous, ...next }) });
+    void navigate({
+      search: (previous) => ({
+        ...previous,
+        ...(next.page !== undefined ? { page: next.page } : {}),
+        ...(next.pageSize !== undefined ? { pageSize: next.pageSize } : {}),
+        ...("q" in next ? { q: next.q } : {}),
+        ...("filterKey" in next ? { filterKey: next.filterKey } : {}),
+        ...("filterValue" in next ? { filterValue: next.filterValue } : {}),
+        ...("sortBy" in next ? { sortBy: next.sortBy } : {}),
+        ...(next.order !== undefined ? { order: next.order } : {}),
+      }),
+    });
   };
 
   return <UsersPage data={data} input={search} onInputChange={onInputChange} />;

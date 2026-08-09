@@ -3,18 +3,13 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Eye, Pencil, Plus, Search, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 
-import {
-  
-  
-  
-  createUserInputSchema
-} from "../api/contracts";
+import { createUserInputSchema } from "../api/contracts";
 import {
   addUserMutationOptions,
   deleteUserMutationOptions,
   updateUserMutationOptions,
 } from "../api/mutations";
-import type {CreateUserInput, User, UsersListResponse} from "../api/contracts";
+import type { CreateUserInput, User, UsersListResponse } from "../api/contracts";
 import type { UsersListInput } from "../api/queries";
 import { ConfirmDeleteDialog } from "#/shared/components/confirm-delete-dialog";
 import { DataPagination } from "#/shared/components/data-pagination";
@@ -183,7 +178,11 @@ export function UsersPage({ data, input, onInputChange }: UsersPageProps) {
           <select
             value={input.filterKey ?? ""}
             onChange={(event) =>
-              onInputChange({ filterKey: event.target.value || undefined, q: undefined, page: 1 })
+              onInputChange({
+                filterKey: (event.target.value || undefined) as UsersListInput["filterKey"],
+                q: undefined,
+                page: 1,
+              })
             }
             className="h-9 rounded-md border bg-background px-3 text-sm"
           >
@@ -205,7 +204,10 @@ export function UsersPage({ data, input, onInputChange }: UsersPageProps) {
           <select
             value={input.sortBy ?? ""}
             onChange={(event) =>
-              onInputChange({ sortBy: event.target.value || undefined, page: 1 })
+              onInputChange({
+                sortBy: (event.target.value || undefined) as UsersListInput["sortBy"],
+                page: 1,
+              })
             }
             className="h-9 rounded-md border bg-background px-3 text-sm"
           >

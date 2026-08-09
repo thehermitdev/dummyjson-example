@@ -101,7 +101,10 @@ export async function getPostTagList(signal: AbortSignal): Promise<Array<string>
   return parseResponse(postTagListSchema, response.data, "Invalid post tag list response");
 }
 
-export async function getPostComments(postId: number, signal: AbortSignal): Promise<Array<PostComment>> {
+export async function getPostComments(
+  postId: number,
+  signal: AbortSignal,
+): Promise<Array<PostComment>> {
   const response = await httpClient.get(`/posts/${postId}/comments`, { signal });
   return parseResponse(postCommentsResponseSchema, response.data, "Invalid post comments response")
     .comments;

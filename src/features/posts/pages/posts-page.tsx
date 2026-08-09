@@ -3,18 +3,13 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Eye, Pencil, Plus, Search, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 
-import {
-  
-  
-  
-  createPostInputSchema
-} from "../api/contracts";
+import { createPostInputSchema } from "../api/contracts";
 import {
   addPostMutationOptions,
   deletePostMutationOptions,
   updatePostMutationOptions,
 } from "../api/mutations";
-import type {CreatePostInput, Post, PostsListResponse} from "../api/contracts";
+import type { CreatePostInput, Post, PostsListResponse } from "../api/contracts";
 import type { PostsListInput } from "../api/queries";
 import { ConfirmDeleteDialog } from "#/shared/components/confirm-delete-dialog";
 import { DataPagination } from "#/shared/components/data-pagination";

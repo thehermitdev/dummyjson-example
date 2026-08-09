@@ -39,7 +39,18 @@ function PostsRoute() {
   const tags = useSuspenseQuery(postTagListQueryOptions()).data;
   const users = useSuspenseQuery(usersDirectoryQueryOptions()).data.users;
   const onInputChange = (next: Partial<PostsListInput>) =>
-    void navigate({ search: (previous) => ({ ...previous, ...next }) });
+    void navigate({
+      search: (previous) => ({
+        ...previous,
+        ...(next.page !== undefined ? { page: next.page } : {}),
+        ...(next.pageSize !== undefined ? { pageSize: next.pageSize } : {}),
+        ...("q" in next ? { q: next.q } : {}),
+        ...("tag" in next ? { tag: next.tag } : {}),
+        ...("userId" in next ? { userId: next.userId } : {}),
+        ...("sortBy" in next ? { sortBy: next.sortBy } : {}),
+        ...(next.order !== undefined ? { order: next.order } : {}),
+      }),
+    });
   return (
     <PostsPage
       data={posts}

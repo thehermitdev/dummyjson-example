@@ -5,7 +5,6 @@ import { router } from "./router";
 import { useAppAuth } from "#/app/auth/clerk-auth";
 import { queryClient } from "#/app/query-client/query-client";
 
-
 export function AppRouterProvider() {
   const auth = useAppAuth();
   const previousUserIdRef = useRef<string | null | undefined>(undefined);
