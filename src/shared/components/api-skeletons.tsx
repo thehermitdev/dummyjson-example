@@ -14,18 +14,18 @@ export function TablePageSkeleton({ rows = 8, columns = 5 }: { rows?: number; co
       <PageHeadingSkeleton />
       <div className="overflow-hidden rounded-xl border bg-card shadow-xs">
         <div className="grid gap-3 border-b p-4 sm:grid-cols-2 lg:grid-cols-4">
-          {Array.from({ length: 4 }, (_, index) => (
+          {Array.from({ length: 4 }, (_toolbarValue, index) => (
             <Skeleton key={`toolbar-${index}`} className="h-9 w-full" />
           ))}
         </div>
         <div className="divide-y">
-          {Array.from({ length: rows }, (_, rowIndex) => (
+          {Array.from({ length: rows }, (_rowValue, rowIndex) => (
             <div
               key={`row-${rowIndex}`}
               className="grid items-center gap-4 px-4 py-4"
               style={{ gridTemplateColumns: `repeat(${columns}, minmax(0, 1fr))` }}
             >
-              {Array.from({ length: columns }, (_, columnIndex) => (
+              {Array.from({ length: columns }, (_columnValue, columnIndex) => (
                 <Skeleton
                   key={`cell-${rowIndex}-${columnIndex}`}
                   className={columnIndex === 0 ? "h-10 w-full" : "h-4 w-full"}
@@ -58,7 +58,7 @@ export function DetailPageSkeleton() {
           <Skeleton className="h-7 w-20 rounded-full" />
         </div>
         <div className="mt-6 grid gap-4 border-t pt-5 sm:grid-cols-2 lg:grid-cols-4">
-          {Array.from({ length: 4 }, (_, index) => (
+          {Array.from({ length: 4 }, (_metaValue, index) => (
             <div key={`meta-${index}`} className="space-y-2">
               <Skeleton className="h-3 w-20" />
               <Skeleton className="h-5 w-32 max-w-full" />
@@ -84,7 +84,7 @@ export function RelationPanelSkeleton() {
         <Skeleton className="h-4 w-20" />
       </div>
       <div className="grid gap-3 p-5">
-        {Array.from({ length: 4 }, (_, index) => (
+        {Array.from({ length: 4 }, (_relationValue, index) => (
           <div key={`relation-${index}`} className="space-y-2 rounded-lg border p-4">
             <Skeleton className="h-5 w-2/3" />
             <Skeleton className="h-4 w-full" />
@@ -101,7 +101,7 @@ export function TagsPageSkeleton() {
     <div className="space-y-6" role="status" aria-label="Loading tags">
       <PageHeadingSkeleton />
       <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
-        {Array.from({ length: 9 }, (_, index) => (
+        {Array.from({ length: 9 }, (_tagCardValue, index) => (
           <div key={`tag-card-${index}`} className="space-y-3 rounded-xl border bg-card p-5">
             <Skeleton className="h-5 w-32" />
             <Skeleton className="h-4 w-24" />
@@ -111,7 +111,7 @@ export function TagsPageSkeleton() {
       <div className="rounded-xl border bg-card p-5">
         <Skeleton className="h-5 w-24" />
         <div className="mt-4 flex flex-wrap gap-2">
-          {Array.from({ length: 12 }, (_, index) => (
+          {Array.from({ length: 12 }, (_tagPillValue, index) => (
             <Skeleton key={`tag-pill-${index}`} className="h-7 w-20 rounded-full" />
           ))}
         </div>
@@ -137,7 +137,7 @@ export function PostDetailSkeleton() {
           <Skeleton className="h-7 w-20 rounded-full" />
         </div>
         <div className="mt-8 space-y-3">
-          {Array.from({ length: 6 }, (_, index) => (
+          {Array.from({ length: 6 }, (_lineValue, index) => (
             <Skeleton key={`post-line-${index}`} className="h-4 w-full" />
           ))}
         </div>
@@ -148,7 +148,7 @@ export function PostDetailSkeleton() {
           <Skeleton className="mt-2 h-4 w-20" />
         </div>
         <div className="divide-y">
-          {Array.from({ length: 4 }, (_, index) => (
+          {Array.from({ length: 4 }, (_commentValue, index) => (
             <div key={`comment-${index}`} className="space-y-3 p-5">
               <Skeleton className="h-4 w-32" />
               <Skeleton className="h-4 w-full" />
@@ -167,7 +167,7 @@ export function DashboardPageSkeleton() {
     <div className="space-y-6" role="status" aria-label="Loading dashboard">
       <PageHeadingSkeleton />
       <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-        {Array.from({ length: 4 }, (_, index) => (
+        {Array.from({ length: 4 }, (_metricValue, index) => (
           <div
             key={`metric-${index}`}
             className="space-y-4 rounded-xl border bg-card p-5 shadow-xs"
