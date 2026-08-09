@@ -1,4 +1,4 @@
-import { queryOptions } from "@tanstack/react-query";
+import { keepPreviousData, queryOptions } from "@tanstack/react-query";
 
 import { getCart, getCarts } from "./client";
 import type { CartsListInput } from "./client";
@@ -16,6 +16,7 @@ export function cartsListQueryOptions(input: CartsListInput) {
     queryKey: cartsKeys.list(input),
     queryFn: ({ signal }) => getCarts(input, signal),
     staleTime: 60_000,
+    placeholderData: keepPreviousData,
   });
 }
 
@@ -23,6 +24,7 @@ export function cartDetailQueryOptions(cartId: number) {
   return queryOptions({
     queryKey: cartsKeys.detail(cartId),
     queryFn: ({ signal }) => getCart(cartId, signal),
+    staleTime: 5 * 60_000,
   });
 }
 
